@@ -3,16 +3,16 @@
 export function Lights() {
   return (
     <>
-      {/* Luz ambiental cálida y suave */}
-      <ambientLight intensity={0.4} color="#ffeedd" />
+      {/* Luz ambiental - más intensa para compensar menos luces */}
+      <ambientLight intensity={0.6} color="#ffeedd" />
 
-      {/* Luz principal del pasillo - cálida y elegante */}
+      {/* Luz principal del pasillo - única con sombras */}
       <directionalLight
         position={[0, 8, 0]}
-        intensity={0.8}
+        intensity={1.2}
         color="#fff8f0"
         castShadow
-        shadow-mapSize={[2048, 2048]}
+        shadow-mapSize={[1024, 1024]}
         shadow-camera-far={50}
         shadow-camera-left={-6}
         shadow-camera-right={6}
@@ -20,81 +20,31 @@ export function Lights() {
         shadow-camera-bottom={-20}
       />
 
-      {/* Luz de relleno suave */}
-      <directionalLight
-        position={[0, 4, 15]}
-        intensity={0.3}
-        color="#fff5e6"
+      {/* Luces de techo - reducidas a 2 */}
+      <pointLight position={[0, 4.5, -8]} intensity={25} color="#ffe4c4" distance={15} decay={2} />
+      <pointLight position={[0, 4.5, 6]} intensity={25} color="#ffe4c4" distance={15} decay={2} />
+
+      {/* Spotlights para cuadros - solo 2, sin sombras */}
+      <spotLight
+        position={[-2, 3.8, -2]}
+        angle={0.6}
+        penumbra={0.9}
+        intensity={50}
+        color="#fff8f0"
+        target-position={[-3.5, 1.5, -2]}
+      />
+      <spotLight
+        position={[2, 3.8, -2]}
+        angle={0.6}
+        penumbra={0.9}
+        intensity={50}
+        color="#fff8f0"
+        target-position={[3.5, 1.5, -2]}
       />
 
-      {/* Luces de techo tipo galería - cálidas y elegantes */}
-      <pointLight position={[0, 4.5, -12]} intensity={20} color="#ffe4c4" distance={10} decay={2} />
-      <pointLight position={[0, 4.5, -4]} intensity={20} color="#ffe4c4" distance={10} decay={2} />
-      <pointLight position={[0, 4.5, 4]} intensity={20} color="#ffe4c4" distance={10} decay={2} />
-      <pointLight position={[0, 4.5, 12]} intensity={20} color="#ffe4c4" distance={10} decay={2} />
-
-      {/* Spotlights para cuadros - lado izquierdo */}
-      <spotLight
-        position={[-2, 3.8, -8]}
-        angle={0.5}
-        penumbra={0.8}
-        intensity={40}
-        color="#fff8f0"
-        castShadow
-      />
-      <spotLight
-        position={[-2, 3.8, 0]}
-        angle={0.5}
-        penumbra={0.8}
-        intensity={40}
-        color="#fff8f0"
-        castShadow
-      />
-      <spotLight
-        position={[-2, 3.8, 8]}
-        angle={0.5}
-        penumbra={0.8}
-        intensity={40}
-        color="#fff8f0"
-        castShadow
-      />
-
-      {/* Spotlights para cuadros - lado derecho */}
-      <spotLight
-        position={[2, 3.8, -8]}
-        angle={0.5}
-        penumbra={0.8}
-        intensity={40}
-        color="#fff8f0"
-        castShadow
-      />
-      <spotLight
-        position={[2, 3.8, 0]}
-        angle={0.5}
-        penumbra={0.8}
-        intensity={40}
-        color="#fff8f0"
-        castShadow
-      />
-      <spotLight
-        position={[2, 3.8, 8]}
-        angle={0.5}
-        penumbra={0.8}
-        intensity={40}
-        color="#fff8f0"
-        castShadow
-      />
-
-      {/* Luces de acento doradas en el piso */}
-      <pointLight position={[-2.5, 0.3, -6]} intensity={3} color="#d4af37" distance={4} />
-      <pointLight position={[2.5, 0.3, -6]} intensity={3} color="#d4af37" distance={4} />
-      <pointLight position={[-2.5, 0.3, 2]} intensity={3} color="#d4af37" distance={4} />
-      <pointLight position={[2.5, 0.3, 2]} intensity={3} color="#d4af37" distance={4} />
-      <pointLight position={[-2.5, 0.3, 10]} intensity={3} color="#d4af37" distance={4} />
-      <pointLight position={[2.5, 0.3, 10]} intensity={3} color="#d4af37" distance={4} />
-
-      {/* Luz que sigue al jugador */}
-      <pointLight position={[0, 2.5, 12]} intensity={8} color="#ffffff" distance={6} />
+      {/* Luces de acento doradas - reducidas a 2 */}
+      <pointLight position={[-2.5, 0.3, 0]} intensity={4} color="#d4af37" distance={8} />
+      <pointLight position={[2.5, 0.3, 0]} intensity={4} color="#d4af37" distance={8} />
     </>
   );
 }

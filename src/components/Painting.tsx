@@ -29,34 +29,38 @@ export function Painting({ position, rotation, title, description, color }: Pain
 
   return (
     <group position={position} rotation={rotation}>
-      {/* Marco dorado */}
-      <mesh castShadow receiveShadow>
-        <boxGeometry args={[2.4, 1.8, 0.15]} />
+      {/* Marco dorado - simplificado a una sola capa */}
+      <mesh castShadow>
+        <boxGeometry args={[2.4, 1.8, 0.1]} />
         <meshStandardMaterial
-          color="#d4af37"
-          metalness={0.9}
+          color="#b8860b"
+          metalness={0.8}
           roughness={0.3}
         />
       </mesh>
 
-      {/* Interior del marco (rebaje) */}
-      <mesh position={[0, 0, 0.06]}>
-        <boxGeometry args={[2.1, 1.5, 0.05]} />
-        <meshStandardMaterial color="#1a1a1a" />
+      {/* Passepartout */}
+      <mesh position={[0, 0, 0.05]}>
+        <boxGeometry args={[2.1, 1.5, 0.02]} />
+        <meshStandardMaterial
+          color="#f5f5dc"
+          roughness={0.9}
+        />
       </mesh>
 
       {/* Lienzo/Cuadro */}
       <mesh
-        position={[0, 0, 0.08]}
+        position={[0, 0, 0.07]}
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
         onClick={handleClick}
       >
-        <planeGeometry args={[2, 1.4]} />
+        <planeGeometry args={[1.9, 1.3]} />
         <meshStandardMaterial
-          color={hovered ? "#2a2a4a" : color}
-          emissive={hovered ? "#1a1a3a" : "#000000"}
-          emissiveIntensity={hovered ? 0.3 : 0}
+          color={hovered ? "#3a3a5a" : color}
+          emissive={hovered ? "#2a2a4a" : "#111122"}
+          emissiveIntensity={hovered ? 0.4 : 0.15}
+          roughness={0.8}
         />
       </mesh>
 
@@ -66,7 +70,7 @@ export function Painting({ position, rotation, title, description, color }: Pain
           position={[0, 0, 0.1]}
           center
           style={{
-            width: "180px",
+            width: "200px",
             textAlign: "center",
             pointerEvents: "none",
             userSelect: "none",
@@ -74,31 +78,38 @@ export function Painting({ position, rotation, title, description, color }: Pain
         >
           <div
             style={{
-              color: "#d4af37",
-              fontSize: "18px",
-              fontWeight: "bold",
-              textShadow: "0 2px 10px rgba(0,0,0,0.8)",
-              fontFamily: "serif",
+              color: "#f0e68c",
+              fontSize: "20px",
+              fontWeight: "600",
+              textShadow: "0 2px 15px rgba(0,0,0,0.9), 0 0 30px rgba(218,165,32,0.3)",
+              fontFamily: "Georgia, serif",
+              letterSpacing: "1px",
             }}
           >
             {title}
           </div>
           <div
             style={{
-              color: "#888",
-              fontSize: "11px",
-              marginTop: "8px",
+              color: "rgba(255,255,255,0.6)",
+              fontSize: "10px",
+              marginTop: "10px",
+              fontFamily: "system-ui, sans-serif",
+              letterSpacing: "0.5px",
             }}
           >
-            Click para ver más
+            Click para ver
           </div>
         </Html>
       )}
 
-      {/* Luz del cuadro (pequeño reflector) */}
-      <mesh position={[0, 1.1, 0.2]}>
-        <boxGeometry args={[0.4, 0.08, 0.15]} />
-        <meshStandardMaterial color="#1a1a1a" metalness={0.8} />
+      {/* Placa del título debajo del cuadro */}
+      <mesh position={[0, -1.05, 0.06]}>
+        <boxGeometry args={[0.7, 0.12, 0.02]} />
+        <meshStandardMaterial
+          color="#b8860b"
+          metalness={0.85}
+          roughness={0.25}
+        />
       </mesh>
     </group>
   );

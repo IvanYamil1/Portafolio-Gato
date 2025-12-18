@@ -261,10 +261,10 @@ export function Cat() {
 
       const newPosition = groupRef.current.position.clone().add(direction);
 
-      if (newPosition.x > -2.5 && newPosition.x < 2.5) {
+      if (newPosition.x > -1.8 && newPosition.x < 1.8) {
         groupRef.current.position.x = newPosition.x;
       }
-      if (newPosition.z > -18 && newPosition.z < 15) {
+      if (newPosition.z > -12 && newPosition.z < 12) {
         groupRef.current.position.z = newPosition.z;
       }
     }
@@ -278,7 +278,7 @@ export function Cat() {
   });
 
   return (
-    <group ref={groupRef} position={[0, 0, 12]}>
+    <group ref={groupRef} position={[0, 0, 10]}>
       <Suspense fallback={<CatPlaceholder />}>
         <CatModel isMoving={isMoving} isRunning={isRunning} turnDirection={turnDirection} />
       </Suspense>
