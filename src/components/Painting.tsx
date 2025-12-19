@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, Suspense } from "react";
+import { useRef, Suspense, useState } from "react";
 import { Text, shaderMaterial, useTexture } from "@react-three/drei";
 import { useFrame, extend } from "@react-three/fiber";
 import * as THREE from "three";
@@ -174,63 +174,160 @@ function PergaminoBase({ title, children }: { title: string; children: React.Rea
   );
 }
 
-// Componente para Proyectos - Estilo galería con cards
+// Componente para imagen de proyecto
+function ProyectoImage({ image, position = [0, 0, 0] as [number, number, number], width = 0.28, height = 0.18 }: { image: string; position?: [number, number, number]; width?: number; height?: number }) {
+  const texture = useTexture(image);
+
+  return (
+    <mesh position={position}>
+      <planeGeometry args={[width, height]} />
+      <meshBasicMaterial map={texture} />
+    </mesh>
+  );
+}
+
+// Componente individual para cada card de proyecto con hover
+function ProyectoCard({ proyecto, index, imageOnLeft }: {
+  proyecto: { nombre: string; tipo: string; techs: string[]; desc: string; imagen: string; link?: string };
+  index: number;
+  imageOnLeft: boolean
+}) {
+  const [hovered, setHovered] = useState(false);
+  const groupRef = useRef<THREE.Group>(null);
+
+  const y = 0.15 - index * 0.32;
+  const imageX = imageOnLeft ? -0.62 : 0.62;
+
+  // Animación de hover
+  useFrame(() => {
+    if (groupRef.current) {
+      const targetZ = hovered ? 0.03 : 0;
+      groupRef.current.position.z += (targetZ - groupRef.current.position.z) * 0.15;
+    }
+  });
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Evitar que el click propague al cuadro padre
+    if (proyecto.link) {
+      window.open(proyecto.link, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  return (
+    <group
+      ref={groupRef}
+      position={[0, y, 0]}
+      onPointerEnter={() => setHovered(true)}
+      onPointerLeave={() => setHovered(false)}
+      onClick={handleClick}
+    >
+      {/* Card background */}
+      <mesh position={[0, 0, -0.002]}>
+        <planeGeometry args={[1.7, 0.28]} />
+        <meshBasicMaterial color={hovered ? "#b8a67a" : "#c9b896"} />
+      </mesh>
+
+      {/* Imagen del proyecto */}
+      <Suspense fallback={null}>
+        <ProyectoImage image={proyecto.imagen} position={[imageX, 0, 0.001]} width={0.38} height={0.22} />
+      </Suspense>
+
+      {/* Borde de la imagen */}
+      <mesh position={[imageX, 0, -0.001]}>
+        <planeGeometry args={[0.4, 0.24]} />
+        <meshBasicMaterial color="#c9a227" />
+      </mesh>
+
+      {/* Contenido */}
+      <group position={[imageOnLeft ? -0.02 : 0.02, 0, 0]}>
+        {/* Nombre del proyecto - arriba */}
+        <Text position={[0, 0.08, 0.001]} fontSize={0.04} color="#5c4a32" anchorX="center" anchorY="middle" fontWeight="bold">
+          {proyecto.nombre}
+        </Text>
+
+        {/* Tecnologías - centro exacto */}
+        <group position={[0, 0, 0]}>
+          {proyecto.techs.map((tech, techIndex) => {
+            const techOffset = (techIndex - 1) * 0.22;
+            return (
+              <group key={techIndex} position={[techOffset, 0, 0]}>
+                <mesh position={[0, 0, -0.001]}>
+                  <planeGeometry args={[0.2, 0.045]} />
+                  <meshBasicMaterial color="#d4c4a8" />
+                </mesh>
+                <Text position={[0, 0, 0.001]} fontSize={0.02} color="#5c4a32" anchorX="center" anchorY="middle">
+                  {tech}
+                </Text>
+              </group>
+            );
+          })}
+        </group>
+
+        {/* Descripción - abajo */}
+        <Text position={[0, -0.08, 0.001]} fontSize={0.022} color="#8b7355" anchorX="center" anchorY="middle" maxWidth={0.7}>
+          {proyecto.desc}
+        </Text>
+      </group>
+
+      {/* Badge tipo - en el extremo opuesto a la imagen */}
+      <group position={[imageOnLeft ? 0.68 : -0.68, 0, 0]}>
+        <mesh position={[0, 0, -0.001]}>
+          <planeGeometry args={[0.18, 0.07]} />
+          <meshBasicMaterial color="#8b7355" />
+        </mesh>
+        <Text position={[0, 0, 0.001]} fontSize={0.026} color="#f5f0e6" anchorX="center" anchorY="middle" maxWidth={0.17} textAlign="center">
+          {proyecto.tipo}
+        </Text>
+      </group>
+    </group>
+  );
+}
+
+// Componente para Proyectos - Cards verticales apiladas
 function ProyectosContent({ image }: { image?: string }) {
   const proyectos = [
-    { nombre: "E-Commerce", icon: "🛒" },
-    { nombre: "Dashboard", icon: "📊" },
-    { nombre: "App Mobile", icon: "📱" },
-    { nombre: "3D Gallery", icon: "🎨" },
+    {
+      nombre: "POS Abarrotes",
+      tipo: "Sistema POS",
+      icon: "🛒",
+      techs: ["Next.js", "TypeScript", "Zustand"],
+      desc: "Sistema de punto de venta completo",
+      imagen: "/images/pos-abarrotes.png",
+      link: undefined,
+    },
+    {
+      nombre: "Patitas Felices",
+      tipo: "Landing Page",
+      icon: "🐱",
+      techs: ["Next.js", "TypeScript", "Tailwind"],
+      desc: "Sitio web para refugio de gatos",
+      imagen: "/images/refugio-gatos.png",
+      link: undefined,
+    },
+    {
+      nombre: "Syllet",
+      tipo: "Sitio Corporativo",
+      icon: "🚀",
+      techs: ["Next.js", "GSAP", "Supabase"],
+      desc: "Sitio de agencia con animaciones",
+      imagen: "/images/syllet.png",
+      link: "https://syllet.com",
+    },
   ];
 
   return (
     <PergaminoBase title="Proyectos">
-      {/* Grid de proyectos en cards */}
+      {/* Cards verticales apiladas */}
       <group position={[0, 0.05, 0]}>
-        {proyectos.map((proyecto, index) => {
-          const col = index % 2;
-          const row = Math.floor(index / 2);
-          const x = -0.42 + col * 0.84;
-          const y = 0.12 - row * 0.38;
-
-          return (
-            <group key={index} position={[x, y, 0]}>
-              {/* Card background */}
-              <mesh position={[0, 0, -0.001]}>
-                <planeGeometry args={[0.75, 0.32]} />
-                <meshBasicMaterial color="#c9b896" />
-              </mesh>
-              {/* Icono grande */}
-              <Text position={[-0.25, 0, 0.001]} fontSize={0.12} anchorX="center" anchorY="middle">
-                {proyecto.icon}
-              </Text>
-              {/* Nombre */}
-              <Text position={[0.08, 0, 0.001]} fontSize={0.04} color="#5c4a32" anchorX="left" anchorY="middle">
-                {proyecto.nombre}
-              </Text>
-            </group>
-          );
-        })}
+        {proyectos.map((proyecto, index) => (
+          <ProyectoCard
+            key={index}
+            proyecto={proyecto}
+            index={index}
+            imageOnLeft={index % 2 === 0}
+          />
+        ))}
       </group>
-
-      {/* Línea decorativa */}
-      <mesh position={[0, -0.35, 0]}>
-        <planeGeometry args={[1.5, 0.002]} />
-        <meshBasicMaterial color="#c9a227" transparent opacity={0.5} />
-      </mesh>
-
-      {/* Descripción */}
-      <Text
-        position={[0, -0.45, 0.001]}
-        fontSize={0.032}
-        color="#5c4a32"
-        anchorX="center"
-        anchorY="middle"
-        maxWidth={1.6}
-        textAlign="center"
-      >
-        Proyectos que demuestran mi pasión por el desarrollo.
-      </Text>
     </PergaminoBase>
   );
 }
