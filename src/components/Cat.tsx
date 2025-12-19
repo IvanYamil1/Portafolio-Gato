@@ -16,9 +16,10 @@ interface CatModelProps {
   isMoving: boolean;
   isRunning: boolean;
   turnDirection: number; // -1 izquierda, 0 recto, 1 derecha
+  isMobile: boolean;
 }
 
-function CatModel({ isMoving, isRunning, turnDirection }: CatModelProps) {
+function CatModel({ isMoving, isRunning, turnDirection, isMobile }: CatModelProps) {
   const { scene, animations } = useGLTF("/models/cat.gltf");
   const modelRef = useRef<THREE.Group>(null);
   const { actions } = useAnimations(animations, modelRef);
@@ -28,11 +29,11 @@ function CatModel({ isMoving, isRunning, turnDirection }: CatModelProps) {
   useEffect(() => {
     scene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
+        child.castShadow = !isMobile;
+        child.receiveShadow = !isMobile;
       }
     });
-  }, [scene]);
+  }, [scene, isMobile]);
 
   useEffect(() => {
     const runAction = actions["run"];
@@ -299,9 +300,9 @@ export function Cat() {
   return (
     <group ref={groupRef} position={[0, 0, 10]}>
       <Suspense fallback={<CatPlaceholder />}>
-        <CatModel isMoving={isMoving} isRunning={isRunning} turnDirection={turnDirection} />
+        <CatModel isMoving={isMoving} isRunning={isRunning} turnDirection={turnDirection} isMobile={isMobile} />
       </Suspense>
-      <pointLight position={[0, 2, 0]} intensity={5} distance={6} color="#ffffff" />
+      {!isMobile && <pointLight position={[0, 2, 0]} intensity={5} distance={6} color="#ffffff" />}
     </group>
   );
 }

@@ -1,7 +1,5 @@
 "use client";
 
-import { useRef } from "react";
-import * as THREE from "three";
 import { Painting } from "./Painting";
 
 // Información para cada cuadro (pasillo más angosto)
@@ -63,23 +61,24 @@ const paintings = [
   },
 ];
 
-export function Gallery() {
-  const floorRef = useRef<THREE.Mesh>(null);
+interface GalleryProps {
+  isMobile?: boolean;
+}
 
+export function Gallery({ isMobile = false }: GalleryProps) {
   return (
     <group>
       {/* Piso del pasillo - mármol oscuro elegante */}
       <mesh
-        ref={floorRef}
         rotation={[-Math.PI / 2, 0, 0]}
         position={[0, 0, 0]}
-        receiveShadow
+        receiveShadow={!isMobile}
       >
         <planeGeometry args={[6, 28]} />
         <meshStandardMaterial
           color="#1a1a1a"
           roughness={0.3}
-          metalness={0.4}
+          metalness={isMobile ? 0.1 : 0.4}
         />
       </mesh>
 
@@ -97,7 +96,7 @@ export function Gallery() {
       <mesh
         rotation={[-Math.PI / 2, 0, 0]}
         position={[0, 0.01, 0]}
-        receiveShadow
+        receiveShadow={!isMobile}
       >
         <planeGeometry args={[1.5, 24]} />
         <meshStandardMaterial
@@ -118,13 +117,13 @@ export function Gallery() {
       </mesh>
 
       {/* Pared izquierda */}
-      <mesh position={[-3, 2.5, 0]} receiveShadow>
+      <mesh position={[-3, 2.5, 0]} receiveShadow={!isMobile}>
         <boxGeometry args={[0.3, 5, 28]} />
         <meshStandardMaterial color="#f5f0e6" roughness={0.9} metalness={0.05} />
       </mesh>
 
       {/* Pared derecha */}
-      <mesh position={[3, 2.5, 0]} receiveShadow>
+      <mesh position={[3, 2.5, 0]} receiveShadow={!isMobile}>
         <boxGeometry args={[0.3, 5, 28]} />
         <meshStandardMaterial color="#f5f0e6" roughness={0.9} metalness={0.05} />
       </mesh>

@@ -1,6 +1,31 @@
 "use client";
 
-export function Lights() {
+interface LightsProps {
+  isMobile?: boolean;
+}
+
+export function Lights({ isMobile = false }: LightsProps) {
+  // En móvil: menos luces, sin sombras, más luz ambiental
+  if (isMobile) {
+    return (
+      <>
+        {/* Luz ambiental más intensa para compensar la falta de otras luces */}
+        <ambientLight intensity={1.2} color="#ffeedd" />
+
+        {/* Solo una luz direccional simple sin sombras */}
+        <directionalLight
+          position={[0, 8, 0]}
+          intensity={1.5}
+          color="#fff8f0"
+        />
+
+        {/* Una sola luz de techo central */}
+        <pointLight position={[0, 4.5, 0]} intensity={20} color="#ffe4c4" distance={20} decay={2} />
+      </>
+    );
+  }
+
+  // Desktop: iluminación completa
   return (
     <>
       {/* Luz ambiental - más intensa para compensar menos luces */}
