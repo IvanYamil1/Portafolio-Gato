@@ -128,7 +128,7 @@ export function Cat() {
   const [isMoving, setIsMoving] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [turnDirection, setTurnDirection] = useState(0);
-  const { selectedPainting } = useGallery();
+  const { selectedPainting, touchControls, isMobile } = useGallery();
   const wasViewingPainting = useRef(false);
   const isTransitioningToPainting = useRef(false);
   const transitionProgress = useRef(0);
@@ -166,13 +166,16 @@ export function Cat() {
       const paintingPos = new THREE.Vector3(...selectedPainting.position);
       const paintingRot = selectedPainting.rotation[1];
 
-      // Calcular posición frente al cuadro
-      const offset = new THREE.Vector3(0, 0, 1.8);
+      // Calcular posición frente al cuadro - más lejos en móvil para ver todo el contenido
+      const cameraDistance = isMobile ? 4.0 : 1.8;
+      const offset = new THREE.Vector3(0, 0, cameraDistance);
       offset.applyAxisAngle(new THREE.Vector3(0, 1, 0), paintingRot);
 
+      // En móvil, subir un poco la cámara para ver mejor el pergamino completo
+      const cameraYOffset = isMobile ? 0.15 : 0;
       const camTarget = new THREE.Vector3(
         paintingPos.x + offset.x,
-        paintingPos.y,
+        paintingPos.y + cameraYOffset,
         paintingPos.z + offset.z
       );
 
@@ -231,7 +234,14 @@ export function Cat() {
       return;
     }
 
-    const { forward, backward, left, right, run } = getKeys();
+    // Combinar controles de teclado y táctiles
+    const keyboardControls = getKeys();
+    const forward = keyboardControls.forward || (isMobile && touchControls.forward);
+    const backward = keyboardControls.backward || (isMobile && touchControls.backward);
+    const left = keyboardControls.left || (isMobile && touchControls.left);
+    const right = keyboardControls.right || (isMobile && touchControls.right);
+    const run = keyboardControls.run || (isMobile && touchControls.run);
+
     const moving = forward || backward || left || right; // También animar al girar
 
     if (moving !== isMoving) {

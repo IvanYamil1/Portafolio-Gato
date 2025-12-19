@@ -1,14 +1,138 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGallery } from "@/contexts/GalleryContext";
 
+// Componente Joystick Virtual
+function VirtualJoystick({ onMove, onRunToggle, isRunning }: {
+  onMove: (controls: { forward: boolean; backward: boolean; left: boolean; right: boolean }) => void;
+  onRunToggle: () => void;
+  isRunning: boolean;
+}) {
+  const joystickRef = useRef<HTMLDivElement>(null);
+  const knobRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [knobPosition, setKnobPosition] = useState({ x: 0, y: 0 });
+
+  const handleMove = useCallback((clientX: number, clientY: number) => {
+    if (!joystickRef.current) return;
+
+    const rect = joystickRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    let deltaX = clientX - centerX;
+    let deltaY = clientY - centerY;
+
+    // Limitar al radio del joystick
+    const maxRadius = rect.width / 2 - 15;
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+    if (distance > maxRadius) {
+      deltaX = (deltaX / distance) * maxRadius;
+      deltaY = (deltaY / distance) * maxRadius;
+    }
+
+    setKnobPosition({ x: deltaX, y: deltaY });
+
+    // Determinar direcciones basándose en umbrales
+    const threshold = 20;
+    const controls = {
+      forward: deltaY < -threshold,
+      backward: deltaY > threshold,
+      left: deltaX < -threshold,
+      right: deltaX > threshold,
+    };
+
+    onMove(controls);
+  }, [onMove]);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    setIsDragging(true);
+    const touch = e.touches[0];
+    handleMove(touch.clientX, touch.clientY);
+  }, [handleMove]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!isDragging) return;
+    const touch = e.touches[0];
+    handleMove(touch.clientX, touch.clientY);
+  }, [isDragging, handleMove]);
+
+  const handleTouchEnd = useCallback(() => {
+    setIsDragging(false);
+    setKnobPosition({ x: 0, y: 0 });
+    onMove({ forward: false, backward: false, left: false, right: false });
+  }, [onMove]);
+
+  return (
+    <div className="fixed bottom-8 left-8 z-50 flex items-end gap-4">
+      {/* Joystick */}
+      <div
+        ref={joystickRef}
+        className="relative w-28 h-28 rounded-full bg-black/40 border-2 border-white/20 backdrop-blur-sm touch-none"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {/* Indicadores de dirección */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="absolute top-2 text-white/30 text-xs">▲</div>
+          <div className="absolute bottom-2 text-white/30 text-xs">▼</div>
+          <div className="absolute left-2 text-white/30 text-xs">◀</div>
+          <div className="absolute right-2 text-white/30 text-xs">▶</div>
+        </div>
+        {/* Knob */}
+        <div
+          ref={knobRef}
+          className="absolute top-1/2 left-1/2 w-12 h-12 rounded-full bg-white/30 border-2 border-white/50 backdrop-blur-md transition-colors"
+          style={{
+            transform: `translate(calc(-50% + ${knobPosition.x}px), calc(-50% + ${knobPosition.y}px))`,
+            backgroundColor: isDragging ? 'rgba(212, 175, 55, 0.4)' : 'rgba(255, 255, 255, 0.3)',
+          }}
+        />
+      </div>
+
+      {/* Botón de correr */}
+      <button
+        className={`w-16 h-16 rounded-full border-2 backdrop-blur-sm transition-all touch-none ${
+          isRunning
+            ? 'bg-[#d4af37]/40 border-[#d4af37]/60'
+            : 'bg-black/40 border-white/20'
+        }`}
+        onTouchStart={() => onRunToggle()}
+      >
+        <span className="text-white text-xs font-bold">
+          {isRunning ? '🏃' : '🚶'}
+        </span>
+      </button>
+    </div>
+  );
+}
+
 export function UI() {
-  const { selectedPainting, setSelectedPainting, isLoading, setIsLoading, showIntro, setShowIntro } = useGallery();
+  const { selectedPainting, setSelectedPainting, isLoading, setIsLoading, showIntro, setShowIntro, isMobile, touchControls, setTouchControls } = useGallery();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [musicStarted, setMusicStarted] = useState(false);
+  const [isRunning, setIsRunning] = useState(false);
+
+  const handleJoystickMove = useCallback((controls: { forward: boolean; backward: boolean; left: boolean; right: boolean }) => {
+    setTouchControls({
+      ...controls,
+      run: isRunning,
+    });
+  }, [setTouchControls, isRunning]);
+
+  const handleRunToggle = useCallback(() => {
+    const newRunning = !isRunning;
+    setIsRunning(newRunning);
+    setTouchControls({
+      ...touchControls,
+      run: newRunning,
+    });
+  }, [setTouchControls, touchControls, isRunning]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -347,36 +471,65 @@ export function UI() {
                 Explora mi portafolio de forma interactiva. Camina por la galería y descubre mis proyectos, habilidades y experiencia en cada cuadro.
               </motion.p>
 
-              {/* Controles */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3, duration: 0.6 }}
-                className="flex items-center text-sm tracking-wide"
-                style={{ gap: "1rem" }}
-              >
-                <div
-                  className="flex items-center rounded border border-white/10 bg-white/5"
-                  style={{ gap: "0.5rem", padding: "0.5rem 1rem" }}
+              {/* Controles - Desktop */}
+              {!isMobile && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.6 }}
+                  className="flex items-center text-sm tracking-wide"
+                  style={{ gap: "1rem" }}
                 >
-                  <kbd className="text-white/80 font-medium">WASD</kbd>
-                  <span className="text-white/40 text-xs">mover</span>
-                </div>
-                <div
-                  className="flex items-center rounded border border-white/10 bg-white/5"
-                  style={{ gap: "0.5rem", padding: "0.5rem 1rem" }}
+                  <div
+                    className="flex items-center rounded border border-white/10 bg-white/5"
+                    style={{ gap: "0.5rem", padding: "0.5rem 1rem" }}
+                  >
+                    <kbd className="text-white/80 font-medium">WASD</kbd>
+                    <span className="text-white/40 text-xs">mover</span>
+                  </div>
+                  <div
+                    className="flex items-center rounded border border-white/10 bg-white/5"
+                    style={{ gap: "0.5rem", padding: "0.5rem 1rem" }}
+                  >
+                    <kbd className="text-white/80 font-medium">SHIFT</kbd>
+                    <span className="text-white/40 text-xs">correr</span>
+                  </div>
+                  <div
+                    className="flex items-center rounded border border-white/10 bg-white/5"
+                    style={{ gap: "0.5rem", padding: "0.5rem 1rem" }}
+                  >
+                    <kbd className="text-white/80 font-medium">CLICK</kbd>
+                    <span className="text-white/40 text-xs">ver cuadros</span>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Controles - Mobile */}
+              {isMobile && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.6 }}
+                  className="flex flex-col items-center gap-4 text-sm tracking-wide"
                 >
-                  <kbd className="text-white/80 font-medium">SHIFT</kbd>
-                  <span className="text-white/40 text-xs">correr</span>
-                </div>
-                <div
-                  className="flex items-center rounded border border-white/10 bg-white/5"
-                  style={{ gap: "0.5rem", padding: "0.5rem 1rem" }}
-                >
-                  <kbd className="text-white/80 font-medium">CLICK</kbd>
-                  <span className="text-white/40 text-xs">ver cuadros</span>
-                </div>
-              </motion.div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center rounded border border-white/10 bg-white/5 px-3 py-2">
+                      <span className="text-white/80 text-lg mr-2">🕹️</span>
+                      <span className="text-white/40 text-xs">joystick para mover</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center rounded border border-white/10 bg-white/5 px-3 py-2">
+                      <span className="text-white/80 text-lg mr-2">🏃</span>
+                      <span className="text-white/40 text-xs">botón para correr</span>
+                    </div>
+                    <div className="flex items-center rounded border border-white/10 bg-white/5 px-3 py-2">
+                      <span className="text-white/80 text-lg mr-2">👆</span>
+                      <span className="text-white/40 text-xs">toca cuadros</span>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
 
               {/* Botón */}
               <motion.button
@@ -400,8 +553,17 @@ export function UI() {
         )}
       </AnimatePresence>
 
-      {/* Controles hint */}
-      {!isLoading && !showIntro && !selectedPainting && (
+      {/* Joystick virtual para móvil */}
+      {!isLoading && !showIntro && isMobile && !selectedPainting && (
+        <VirtualJoystick
+          onMove={handleJoystickMove}
+          onRunToggle={handleRunToggle}
+          isRunning={isRunning}
+        />
+      )}
+
+      {/* Controles hint - Desktop */}
+      {!isLoading && !showIntro && !selectedPainting && !isMobile && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -424,10 +586,14 @@ export function UI() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.3 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#0a0a0a]/80 border border-[#262626] rounded-full px-6 py-3 backdrop-blur-sm z-50"
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#0a0a0a]/80 border border-[#262626] rounded-full px-4 py-2 md:px-6 md:py-3 backdrop-blur-sm z-50"
           >
-            <p className="text-[#a3a3a3] text-sm">
-              Presiona <span className="text-[#d4af37]">ESC</span> o <span className="text-[#d4af37]">Click</span> para cerrar
+            <p className="text-[#a3a3a3] text-xs md:text-sm">
+              {isMobile ? (
+                <>Toca fuera para <span className="text-[#d4af37]">cerrar</span></>
+              ) : (
+                <>Presiona <span className="text-[#d4af37]">ESC</span> o <span className="text-[#d4af37]">Click</span> para cerrar</>
+              )}
             </p>
           </motion.div>
         )}
