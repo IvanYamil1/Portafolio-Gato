@@ -25,8 +25,13 @@ export default function Scene() {
         shadows={!isMobile}
         camera={{ position: [0, 1.5, 13], fov: 60 }}
         style={{ width: "100vw", height: "100vh" }}
-        dpr={isMobile ? [1, 1.5] : [1, 2]}
-        performance={{ min: 0.5 }}
+        dpr={isMobile ? 1 : [1, 2]}
+        performance={{ min: 0.3 }}
+        gl={{
+          antialias: !isMobile,
+          powerPreference: isMobile ? "low-power" : "high-performance",
+          precision: isMobile ? "lowp" : "highp",
+        }}
       >
         <color attach="background" args={["#0a0a0a"]} />
         {!isMobile && <fog attach="fog" args={["#0a0a0a", 5, 30]} />}
