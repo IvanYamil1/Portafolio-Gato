@@ -136,6 +136,410 @@ function SquareImage({ image, position = [0, 0, 0] as [number, number, number], 
   );
 }
 
+// Componente base para el fondo pergamino
+function PergaminoBase({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <group position={[0, 0, 0.08]}>
+      {/* Fondo pergamino limpio */}
+      <mesh position={[0, 0, -0.003]}>
+        <planeGeometry args={[1.85, 1.25]} />
+        <meshBasicMaterial color="#d4c4a8" />
+      </mesh>
+
+      {/* Título centrado arriba */}
+      <Text
+        position={[0, 0.52, 0.001]}
+        fontSize={0.1}
+        color="#5c4a32"
+        anchorX="center"
+        anchorY="middle"
+      >
+        {title}
+      </Text>
+
+      {/* Línea decorativa bajo el título */}
+      <mesh position={[0, 0.43, 0]}>
+        <planeGeometry args={[1.4, 0.003]} />
+        <meshBasicMaterial color="#c9a227" />
+      </mesh>
+
+      {/* Diamante decorativo central */}
+      <mesh position={[0, 0.43, 0.001]} rotation={[0, 0, Math.PI / 4]}>
+        <planeGeometry args={[0.025, 0.025]} />
+        <meshBasicMaterial color="#c9a227" />
+      </mesh>
+
+      {children}
+    </group>
+  );
+}
+
+// Componente para Proyectos - Estilo galería con cards
+function ProyectosContent({ image }: { image?: string }) {
+  const proyectos = [
+    { nombre: "E-Commerce", icon: "🛒" },
+    { nombre: "Dashboard", icon: "📊" },
+    { nombre: "App Mobile", icon: "📱" },
+    { nombre: "3D Gallery", icon: "🎨" },
+  ];
+
+  return (
+    <PergaminoBase title="Proyectos">
+      {/* Grid de proyectos en cards */}
+      <group position={[0, 0.05, 0]}>
+        {proyectos.map((proyecto, index) => {
+          const col = index % 2;
+          const row = Math.floor(index / 2);
+          const x = -0.42 + col * 0.84;
+          const y = 0.12 - row * 0.38;
+
+          return (
+            <group key={index} position={[x, y, 0]}>
+              {/* Card background */}
+              <mesh position={[0, 0, -0.001]}>
+                <planeGeometry args={[0.75, 0.32]} />
+                <meshBasicMaterial color="#c9b896" />
+              </mesh>
+              {/* Icono grande */}
+              <Text position={[-0.25, 0, 0.001]} fontSize={0.12} anchorX="center" anchorY="middle">
+                {proyecto.icon}
+              </Text>
+              {/* Nombre */}
+              <Text position={[0.08, 0, 0.001]} fontSize={0.04} color="#5c4a32" anchorX="left" anchorY="middle">
+                {proyecto.nombre}
+              </Text>
+            </group>
+          );
+        })}
+      </group>
+
+      {/* Línea decorativa */}
+      <mesh position={[0, -0.35, 0]}>
+        <planeGeometry args={[1.5, 0.002]} />
+        <meshBasicMaterial color="#c9a227" transparent opacity={0.5} />
+      </mesh>
+
+      {/* Descripción */}
+      <Text
+        position={[0, -0.45, 0.001]}
+        fontSize={0.032}
+        color="#5c4a32"
+        anchorX="center"
+        anchorY="middle"
+        maxWidth={1.6}
+        textAlign="center"
+      >
+        Proyectos que demuestran mi pasión por el desarrollo.
+      </Text>
+    </PergaminoBase>
+  );
+}
+
+// Componente para Educación - Estilo timeline vertical
+function EducacionContent({ image }: { image?: string }) {
+  return (
+    <PergaminoBase title="Educación">
+      {/* Timeline central */}
+      <group position={[0, 0, 0]}>
+        {/* Línea vertical del timeline */}
+        <mesh position={[-0.5, -0.05, -0.001]}>
+          <planeGeometry args={[0.004, 0.7]} />
+          <meshBasicMaterial color="#c9a227" />
+        </mesh>
+
+        {/* Item 1 - Universidad */}
+        <group position={[0, 0.2, 0]}>
+          {/* Punto del timeline */}
+          <mesh position={[-0.5, 0, 0.001]} rotation={[0, 0, Math.PI / 4]}>
+            <planeGeometry args={[0.04, 0.04]} />
+            <meshBasicMaterial color="#c9a227" />
+          </mesh>
+          {/* Contenido */}
+          <group position={[0.15, 0, 0]}>
+            <Text position={[0, 0.03, 0.001]} fontSize={0.045} color="#5c4a32" anchorX="center" anchorY="middle">
+              🎓 Universidad de Guadalajara
+            </Text>
+            <Text position={[0, -0.04, 0.001]} fontSize={0.03} color="#8b7355" anchorX="center" anchorY="middle">
+              Ingeniería en Computación
+            </Text>
+          </group>
+        </group>
+
+        {/* Item 2 - Estado */}
+        <group position={[0, -0.05, 0]}>
+          <mesh position={[-0.5, 0, 0.001]} rotation={[0, 0, Math.PI / 4]}>
+            <planeGeometry args={[0.04, 0.04]} />
+            <meshBasicMaterial color="#c9a227" />
+          </mesh>
+          <group position={[0.15, 0, 0]}>
+            <Text position={[0, 0, 0.001]} fontSize={0.038} color="#5c4a32" anchorX="center" anchorY="middle">
+              📅 Actualmente cursando
+            </Text>
+          </group>
+        </group>
+
+        {/* Item 3 - Cursos */}
+        <group position={[0, -0.28, 0]}>
+          <mesh position={[-0.5, 0, 0.001]} rotation={[0, 0, Math.PI / 4]}>
+            <planeGeometry args={[0.04, 0.04]} />
+            <meshBasicMaterial color="#c9a227" />
+          </mesh>
+          <group position={[0.15, 0, 0]}>
+            <Text position={[0, 0.03, 0.001]} fontSize={0.035} color="#5c4a32" anchorX="center" anchorY="middle">
+              ✨ Cursos y Certificaciones
+            </Text>
+            <Text position={[0, -0.03, 0.001]} fontSize={0.025} color="#8b7355" anchorX="center" anchorY="middle">
+              Aprendizaje continuo autodidacta
+            </Text>
+          </group>
+        </group>
+      </group>
+
+      {/* Frase motivacional */}
+      <Text
+        position={[0, -0.52, 0.001]}
+        fontSize={0.025}
+        color="#8b7355"
+        anchorX="center"
+        anchorY="middle"
+        fontStyle="italic"
+      >
+        "El conocimiento es el mejor recurso"
+      </Text>
+    </PergaminoBase>
+  );
+}
+
+// Componente para Habilidades - Estilo badges/pills en 3 columnas
+function HabilidadesContent({ image }: { image?: string }) {
+  const categorias = [
+    { titulo: "Frontend", icon: "🎨", skills: ["React", "React Native", "Next.js", "TypeScript", "HTML/CSS", "Tailwind CSS"] },
+    { titulo: "Backend", icon: "⚙️", skills: ["NestJS", "Python", "SQL", "REST APIs", "Autenticación", "Supabase"] },
+    { titulo: "DevOps", icon: "🚀", skills: ["Git / GitHub", "Vercel", "Coolify", "CI/CD", "Docker", "Linux"] },
+  ];
+
+  return (
+    <PergaminoBase title="Habilidades">
+      {/* 3 columnas de categorías */}
+      <group position={[0, 0.02, 0]}>
+        {categorias.map((cat, catIndex) => {
+          const x = -0.58 + catIndex * 0.58;
+
+          return (
+            <group key={catIndex} position={[x, 0.08, 0]}>
+              {/* Header de categoría */}
+              <Text position={[0, 0.22, 0.001]} fontSize={0.055} anchorX="center" anchorY="middle">
+                {cat.icon}
+              </Text>
+              <Text position={[0, 0.13, 0.001]} fontSize={0.03} color="#c9a227" anchorX="center" anchorY="middle">
+                {cat.titulo}
+              </Text>
+
+              {/* Skills como lista vertical */}
+              {cat.skills.map((skill, skillIndex) => (
+                <group key={skillIndex} position={[0, 0.02 - skillIndex * 0.085, 0]}>
+                  {/* Badge background */}
+                  <mesh position={[0, 0, -0.001]}>
+                    <planeGeometry args={[0.52, 0.072]} />
+                    <meshBasicMaterial color="#c9b896" />
+                  </mesh>
+                  <Text position={[0, 0, 0.001]} fontSize={0.026} color="#5c4a32" anchorX="center" anchorY="middle">
+                    {skill}
+                  </Text>
+                </group>
+              ))}
+            </group>
+          );
+        })}
+      </group>
+
+      {/* Línea decorativa */}
+      <mesh position={[0, -0.47, 0]}>
+        <planeGeometry args={[1.6, 0.002]} />
+        <meshBasicMaterial color="#c9a227" transparent opacity={0.5} />
+      </mesh>
+
+      {/* Descripción */}
+      <Text
+        position={[0, -0.55, 0.001]}
+        fontSize={0.028}
+        color="#5c4a32"
+        anchorX="center"
+        anchorY="middle"
+      >
+        Desarrollo Full Stack End-to-End
+      </Text>
+    </PergaminoBase>
+  );
+}
+
+// Componente para Experiencia - Estilo horizontal con iconos grandes
+function ExperienciaContent({ image }: { image?: string }) {
+  const experiencias = [
+    { icon: "💼", titulo: "Freelance", desc: "Desarrollo web para clientes" },
+    { icon: "🚀", titulo: "Proyectos", desc: "Apps personales y comerciales" },
+    { icon: "🎯", titulo: "Full Stack", desc: "Web y móvil end-to-end" },
+  ];
+
+  return (
+    <PergaminoBase title="Experiencia">
+      {/* Experiencias en fila horizontal */}
+      <group position={[0, 0.1, 0]}>
+        {experiencias.map((exp, index) => {
+          const x = -0.55 + index * 0.55;
+          return (
+            <group key={index} position={[x, 0, 0]}>
+              {/* Círculo de fondo para icono */}
+              <mesh position={[0, 0.08, -0.001]}>
+                <circleGeometry args={[0.12, 32]} />
+                <meshBasicMaterial color="#c9b896" />
+              </mesh>
+              {/* Borde dorado */}
+              <mesh position={[0, 0.08, -0.002]}>
+                <ringGeometry args={[0.12, 0.135, 32]} />
+                <meshBasicMaterial color="#c9a227" />
+              </mesh>
+              {/* Icono */}
+              <Text position={[0, 0.08, 0.001]} fontSize={0.08} anchorX="center" anchorY="middle">
+                {exp.icon}
+              </Text>
+              {/* Título */}
+              <Text position={[0, -0.08, 0.001]} fontSize={0.038} color="#5c4a32" anchorX="center" anchorY="middle">
+                {exp.titulo}
+              </Text>
+              {/* Descripción */}
+              <Text position={[0, -0.15, 0.001]} fontSize={0.022} color="#8b7355" anchorX="center" anchorY="middle" maxWidth={0.45} textAlign="center">
+                {exp.desc}
+              </Text>
+            </group>
+          );
+        })}
+      </group>
+
+      {/* Línea decorativa */}
+      <mesh position={[0, -0.18, 0]}>
+        <planeGeometry args={[1.5, 0.002]} />
+        <meshBasicMaterial color="#c9a227" transparent opacity={0.4} />
+      </mesh>
+
+      {/* Texto destacado */}
+      <group position={[0, -0.35, 0]}>
+        <mesh position={[0, 0, -0.001]}>
+          <planeGeometry args={[1.5, 0.2]} />
+          <meshBasicMaterial color="#c9b896" />
+        </mesh>
+        <Text
+          position={[0, 0.03, 0.001]}
+          fontSize={0.035}
+          color="#5c4a32"
+          anchorX="center"
+          anchorY="middle"
+        >
+          Siempre aprendiendo y mejorando
+        </Text>
+        <Text
+          position={[0, -0.05, 0.001]}
+          fontSize={0.025}
+          color="#8b7355"
+          anchorX="center"
+          anchorY="middle"
+        >
+          Cada proyecto es una oportunidad de crecimiento
+        </Text>
+      </group>
+    </PergaminoBase>
+  );
+}
+
+// Componente para Contacto - Estilo tarjeta de presentación
+function ContactoContent() {
+  const contactos = [
+    { icon: "✉️", valor: "Ivan.hamden7950@alumnos.udg.mx", tipo: "Email" },
+    { icon: "🐙", valor: "github.com/IvanYamil", tipo: "GitHub" },
+    { icon: "💼", valor: "linkedin.com/in/ivanyamil", tipo: "LinkedIn" },
+  ];
+
+  return (
+    <PergaminoBase title="Contacto">
+      {/* Título llamativo */}
+      <Text
+        position={[0, 0.22, 0.001]}
+        fontSize={0.06}
+        color="#5c4a32"
+        anchorX="center"
+        anchorY="middle"
+      >
+        ¿Colaboramos?
+      </Text>
+
+      {/* Subtítulo */}
+      <Text
+        position={[0, 0.12, 0.001]}
+        fontSize={0.028}
+        color="#8b7355"
+        anchorX="center"
+        anchorY="middle"
+      >
+        Estoy disponible para nuevos proyectos
+      </Text>
+
+      {/* Cards de contacto en fila */}
+      <group position={[0, -0.08, 0]}>
+        {contactos.map((contacto, index) => {
+          const x = -0.52 + index * 0.52;
+          return (
+            <group key={index} position={[x, 0, 0]}>
+              {/* Card */}
+              <mesh position={[0, 0, -0.001]}>
+                <planeGeometry args={[0.48, 0.28]} />
+                <meshBasicMaterial color="#c9b896" />
+              </mesh>
+              {/* Icono */}
+              <Text position={[0, 0.06, 0.001]} fontSize={0.06} anchorX="center" anchorY="middle">
+                {contacto.icon}
+              </Text>
+              {/* Tipo */}
+              <Text position={[0, -0.03, 0.001]} fontSize={0.025} color="#c9a227" anchorX="center" anchorY="middle">
+                {contacto.tipo}
+              </Text>
+              {/* Valor */}
+              <Text position={[0, -0.09, 0.001]} fontSize={0.016} color="#5c4a32" anchorX="center" anchorY="middle" maxWidth={0.44}>
+                {contacto.valor}
+              </Text>
+            </group>
+          );
+        })}
+      </group>
+
+      {/* Ubicación con estilo especial */}
+      <group position={[0, -0.35, 0]}>
+        <mesh position={[0, 0, -0.001]}>
+          <planeGeometry args={[0.8, 0.12]} />
+          <meshBasicMaterial color="#c9b896" />
+        </mesh>
+        <Text position={[-0.15, 0, 0.001]} fontSize={0.04} anchorX="center" anchorY="middle">
+          📍
+        </Text>
+        <Text position={[0.1, 0, 0.001]} fontSize={0.03} color="#5c4a32" anchorX="left" anchorY="middle">
+          Guadalajara, México
+        </Text>
+      </group>
+
+      {/* Frase final */}
+      <Text
+        position={[0, -0.5, 0.001]}
+        fontSize={0.024}
+        color="#8b7355"
+        anchorX="center"
+        anchorY="middle"
+        fontStyle="italic"
+      >
+        "Convirtamos tu idea en realidad"
+      </Text>
+    </PergaminoBase>
+  );
+}
+
 // Componente especial para "Sobre Mí" con estilo pergamino
 function SobreMiContent({ image }: { image?: string }) {
   return (
@@ -365,7 +769,27 @@ export function Painting({ position, rotation, title, description, color, image 
     }
   };
 
-  const isSobreMi = title === "Sobre Mí";
+  // Función para renderizar el contenido según el título del cuadro
+  const renderContent = () => {
+    if (showIntro) return null;
+
+    switch (title) {
+      case "Sobre Mí":
+        return <SobreMiContent image={image} />;
+      case "Proyectos":
+        return <ProyectosContent image={image} />;
+      case "Educación":
+        return <EducacionContent image={image} />;
+      case "Habilidades":
+        return <HabilidadesContent image={image} />;
+      case "Experiencia":
+        return <ExperienciaContent image={image} />;
+      case "Contacto":
+        return <ContactoContent />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <group position={position} rotation={rotation}>
@@ -388,155 +812,16 @@ export function Painting({ position, rotation, title, description, color, image 
         />
       </mesh>
 
-      {/* Lienzo/Cuadro - clickeable - solo para cuadros que no son "Sobre Mí" */}
-      {!isSobreMi && (
-        <mesh position={[0, 0, 0.07]} onClick={handleClick}>
-          <planeGeometry args={[1.9, 1.3]} />
-          <meshStandardMaterial
-            color={color}
-            emissive="#0a0a1a"
-            emissiveIntensity={0.1}
-            roughness={0.8}
-          />
-        </mesh>
-      )}
+      {/* Área clickeable transparente para todos los cuadros */}
+      <mesh position={[0, 0, 0.05]} onClick={handleClick}>
+        <planeGeometry args={[2.1, 1.5]} />
+        <meshBasicMaterial transparent opacity={0} />
+      </mesh>
 
-      {/* Área clickeable para "Sobre Mí" */}
-      {isSobreMi && (
-        <mesh position={[0, 0, 0.05]} onClick={handleClick}>
-          <planeGeometry args={[2.1, 1.5]} />
-          <meshBasicMaterial transparent opacity={0} />
-        </mesh>
-      )}
-
-      {/* Contenido fijo en el cuadro usando Text 3D */}
-      {!showIntro && isSobreMi && (
-        <Suspense fallback={null}>
-          <SobreMiContent image={image} />
-        </Suspense>
-      )}
-
-      {!showIntro && title !== "Sobre Mí" && (
-        <group position={[0, 0, 0.08]}>
-          {/* Fondo con gradiente simulado */}
-          <mesh position={[0, 0, -0.003]}>
-            <planeGeometry args={[1.85, 1.25]} />
-            <meshBasicMaterial color="#0a0a12" transparent opacity={0.85} />
-          </mesh>
-
-          {/* Borde dorado interior */}
-          <mesh position={[0, 0, -0.002]}>
-            <planeGeometry args={[1.8, 1.2]} />
-            <meshBasicMaterial color="#0f0f18" transparent opacity={0.9} />
-          </mesh>
-
-          {/* Marco dorado decorativo superior */}
-          <mesh position={[0, 0.55, 0]}>
-            <planeGeometry args={[1.6, 0.008]} />
-            <meshBasicMaterial color="#d4af37" transparent opacity={0.7} />
-          </mesh>
-
-          {/* Marco dorado decorativo inferior */}
-          <mesh position={[0, -0.55, 0]}>
-            <planeGeometry args={[1.6, 0.008]} />
-            <meshBasicMaterial color="#d4af37" transparent opacity={0.7} />
-          </mesh>
-
-          {/* Imagen circular */}
-          {image && (
-            <Suspense fallback={null}>
-              <CircularImage image={image} />
-            </Suspense>
-          )}
-
-          {/* Borde dorado de la imagen */}
-          {image && (
-            <mesh position={[0, 0.32, -0.001]}>
-              <ringGeometry args={[0.22, 0.25, 32]} />
-              <meshBasicMaterial color="#d4af37" transparent opacity={0.8} />
-            </mesh>
-          )}
-
-          {/* Título */}
-          <Text
-            position={[0, image ? 0.02 : 0.35, 0.001]}
-            fontSize={0.11}
-            color="#d4af37"
-            anchorX="center"
-            anchorY="middle"
-            maxWidth={1.6}
-          >
-            {title}
-          </Text>
-
-          {/* Línea decorativa bajo el título */}
-          <mesh position={[0, image ? -0.08 : 0.22, 0]}>
-            <planeGeometry args={[0.5, 0.006]} />
-            <meshBasicMaterial color="#d4af37" transparent opacity={0.9} />
-          </mesh>
-
-          {/* Diamante decorativo */}
-          <mesh position={[0, image ? -0.08 : 0.22, 0.001]} rotation={[0, 0, Math.PI / 4]}>
-            <planeGeometry args={[0.04, 0.04]} />
-            <meshBasicMaterial color="#d4af37" />
-          </mesh>
-
-          {/* Descripción */}
-          <Text
-            position={[0, image ? -0.3 : -0.1, 0.001]}
-            fontSize={0.052}
-            color="#e0e0e0"
-            anchorX="center"
-            anchorY="middle"
-            maxWidth={1.6}
-            lineHeight={1.5}
-            textAlign="center"
-          >
-            {description}
-          </Text>
-
-          {/* Esquinas decorativas */}
-          {/* Superior izquierda */}
-          <mesh position={[-0.85, 0.55, 0]}>
-            <planeGeometry args={[0.12, 0.006]} />
-            <meshBasicMaterial color="#d4af37" transparent opacity={0.6} />
-          </mesh>
-          <mesh position={[-0.9, 0.5, 0]}>
-            <planeGeometry args={[0.006, 0.12]} />
-            <meshBasicMaterial color="#d4af37" transparent opacity={0.6} />
-          </mesh>
-
-          {/* Superior derecha */}
-          <mesh position={[0.85, 0.55, 0]}>
-            <planeGeometry args={[0.12, 0.006]} />
-            <meshBasicMaterial color="#d4af37" transparent opacity={0.6} />
-          </mesh>
-          <mesh position={[0.9, 0.5, 0]}>
-            <planeGeometry args={[0.006, 0.12]} />
-            <meshBasicMaterial color="#d4af37" transparent opacity={0.6} />
-          </mesh>
-
-          {/* Inferior izquierda */}
-          <mesh position={[-0.85, -0.55, 0]}>
-            <planeGeometry args={[0.12, 0.006]} />
-            <meshBasicMaterial color="#d4af37" transparent opacity={0.6} />
-          </mesh>
-          <mesh position={[-0.9, -0.5, 0]}>
-            <planeGeometry args={[0.006, 0.12]} />
-            <meshBasicMaterial color="#d4af37" transparent opacity={0.6} />
-          </mesh>
-
-          {/* Inferior derecha */}
-          <mesh position={[0.85, -0.55, 0]}>
-            <planeGeometry args={[0.12, 0.006]} />
-            <meshBasicMaterial color="#d4af37" transparent opacity={0.6} />
-          </mesh>
-          <mesh position={[0.9, -0.5, 0]}>
-            <planeGeometry args={[0.006, 0.12]} />
-            <meshBasicMaterial color="#d4af37" transparent opacity={0.6} />
-          </mesh>
-        </group>
-      )}
+      {/* Contenido del cuadro */}
+      <Suspense fallback={null}>
+        {renderContent()}
+      </Suspense>
 
       {/* Placa del título debajo del cuadro */}
       <group position={[0, -1.05, 0.06]}>
