@@ -112,18 +112,6 @@ function GlowingText({ text }: { text: string }) {
   );
 }
 
-// Componente para la imagen circular
-function CircularImage({ image, position = [0, 0.32, 0] as [number, number, number], size = 0.22 }: { image: string; position?: [number, number, number]; size?: number }) {
-  const texture = useTexture(image);
-
-  return (
-    <mesh position={position}>
-      <circleGeometry args={[size, 32]} />
-      <meshBasicMaterial map={texture} />
-    </mesh>
-  );
-}
-
 // Componente para la imagen cuadrada
 function SquareImage({ image, position = [0, 0, 0] as [number, number, number], size = 0.4 }: { image: string; position?: [number, number, number]; size?: number }) {
   const texture = useTexture(image);
@@ -331,6 +319,7 @@ function ProyectoCard({ proyecto, index, imageOnLeft }: {
 }
 
 // Componente para Proyectos - Cards verticales apiladas
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function ProyectosContent({ image }: { image?: string }) {
   const proyectos = [
     {
@@ -426,6 +415,7 @@ function EducacionCard({ icon, titulo, subtitulo, position, width = 1.6 }: {
 }
 
 // Componente para Educación - Rediseñado con enfoque en reclutadores
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function EducacionContent({ image }: { image?: string }) {
   const habilidadesClave = [
     "Algoritmos",
@@ -554,6 +544,7 @@ function SkillBadge({ skill, position }: { skill: string; position: [number, num
 }
 
 // Componente para Habilidades - Estilo badges/pills en 3 columnas
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function HabilidadesContent({ image }: { image?: string }) {
   const categorias = [
     { titulo: "Frontend", icon: "🎨", skills: ["React", "React Native", "Next.js", "TypeScript", "HTML/CSS", "Tailwind CSS"] },
@@ -656,6 +647,7 @@ function StatCard({ numero, label, icon, position }: { numero: string; label: st
 }
 
 // Componente para Experiencia - Estadísticas visuales
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function ExperienciaContent({ image }: { image?: string }) {
   const stats = [
     { numero: "15+", label: "Proyectos entregados", icon: "🚀" },
@@ -837,7 +829,7 @@ function ContactoContent() {
         anchorY="middle"
         fontStyle="italic"
       >
-        "Convirtamos tu idea en realidad"
+        Convirtamos tu idea en realidad
       </Text>
     </PergaminoBase>
   );
@@ -1049,6 +1041,7 @@ function SobreMiContent({ image }: { image?: string }) {
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function Painting({ position, rotation, title, description, color, image }: PaintingProps) {
   const { showIntro, selectedPainting, setSelectedPainting } = useGallery();
   const isSelected = selectedPainting?.title === title;

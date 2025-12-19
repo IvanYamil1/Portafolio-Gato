@@ -24,7 +24,6 @@ function CatModel({ isMoving, isRunning, turnDirection }: CatModelProps) {
   const { actions } = useAnimations(animations, modelRef);
   const currentTilt = useRef(0);
   const idleTime = useRef(0);
-  const currentAnimSpeed = useRef(WALK_ANIM_SPEED);
 
   useEffect(() => {
     scene.traverse((child) => {
@@ -38,8 +37,10 @@ function CatModel({ isMoving, isRunning, turnDirection }: CatModelProps) {
   useEffect(() => {
     const runAction = actions["run"];
     if (runAction && isMoving) {
+      /* eslint-disable react-hooks/immutability */
       runAction.paused = false;
       runAction.timeScale = isRunning ? RUN_ANIM_SPEED : WALK_ANIM_SPEED;
+      /* eslint-enable react-hooks/immutability */
       runAction.reset().fadeIn(0.2).play();
     }
   }, [isMoving, actions, isRunning]);
@@ -49,6 +50,7 @@ function CatModel({ isMoving, isRunning, turnDirection }: CatModelProps) {
     const runAction = actions["run"];
     if (runAction && isMoving) {
       const targetSpeed = isRunning ? RUN_ANIM_SPEED : WALK_ANIM_SPEED;
+      /* eslint-disable-next-line react-hooks/immutability */
       runAction.timeScale = targetSpeed;
     }
   }, [isRunning, actions, isMoving]);
@@ -86,6 +88,7 @@ function CatModel({ isMoving, isRunning, turnDirection }: CatModelProps) {
       const duration = runAction.getClip().duration;
       const targetTime = duration * 0.75;
 
+      /* eslint-disable react-hooks/immutability */
       runAction.paused = false;
       runAction.timeScale = 0;
 
@@ -96,6 +99,7 @@ function CatModel({ isMoving, isRunning, turnDirection }: CatModelProps) {
       } else {
         runAction.time = targetTime;
       }
+      /* eslint-enable react-hooks/immutability */
     }
   });
 
