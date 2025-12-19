@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGallery } from "@/contexts/GalleryContext";
 
 export function UI() {
   const { selectedPainting, setSelectedPainting, isLoading, setIsLoading, showIntro, setShowIntro } = useGallery();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isMuted, setIsMuted] = useState(false);
+  const [musicStarted, setMusicStarted] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -13,6 +16,37 @@ export function UI() {
     }, 4500);
     return () => clearTimeout(timer);
   }, [setIsLoading]);
+
+  // Iniciar música cuando se presiona "Entrar"
+  const startMusic = () => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio("/Musica-fondo.mp3");
+      audioRef.current.loop = true;
+      audioRef.current.volume = 0.3;
+    }
+    audioRef.current.play().catch(() => {
+      // El navegador puede bloquear el autoplay
+    });
+    setMusicStarted(true);
+  };
+
+  // Alternar mute
+  const toggleMute = () => {
+    if (audioRef.current) {
+      audioRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
+
+  // Limpiar al desmontar
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   // Cerrar con ESC
   useEffect(() => {
@@ -349,7 +383,10 @@ export function UI() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.6 }}
-                onClick={() => setShowIntro(false)}
+                onClick={() => {
+                  startMusic();
+                  setShowIntro(false);
+                }}
                 className="border border-white/20 text-white/90 uppercase tracking-[0.25em] text-base transition-all duration-300 hover:bg-white/5 hover:border-white/40 hover:tracking-[0.3em]"
                 style={{ fontFamily: "Georgia, serif", marginTop: "3rem", padding: "1.25rem 4rem" }}
                 whileHover={{ scale: 1.02 }}
@@ -395,6 +432,32 @@ export function UI() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Botón de música */}
+      {musicStarted && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.5 }}
+          onClick={toggleMute}
+          className="fixed top-6 right-6 w-12 h-12 rounded-full bg-[#0a0a0a]/80 border border-[#262626] backdrop-blur-sm z-50 flex items-center justify-center transition-all duration-300 hover:border-[#d4af37]/50 hover:bg-[#0a0a0a]"
+          title={isMuted ? "Activar música" : "Silenciar música"}
+        >
+          {isMuted ? (
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a3a3a3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+              <line x1="23" y1="9" x2="17" y2="15" />
+              <line x1="17" y1="9" x2="23" y2="15" />
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+            </svg>
+          )}
+        </motion.button>
+      )}
 
       {/* Créditos del modelo */}
       <div className="fixed bottom-6 right-6 text-[10px] text-[#444] z-50">

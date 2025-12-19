@@ -14,6 +14,7 @@ const paintings = [
     title: "Sobre Mí",
     description: "Soy Yamil, un desarrollador apasionado por crear experiencias digitales únicas. Me encanta combinar creatividad con código para dar vida a ideas innovadoras.",
     color: "#1a1a2e",
+    image: "/images/imagen1.jpeg",
   },
   {
     id: 2,
@@ -22,6 +23,7 @@ const paintings = [
     title: "Proyectos",
     description: "He trabajado en e-commerce, dashboards, aplicaciones móviles, y experiencias 3D interactivas como esta que estás explorando ahora.",
     color: "#16213e",
+    image: "/images/imagen2.png",
   },
   {
     id: 3,
@@ -30,6 +32,7 @@ const paintings = [
     title: "Educación",
     description: "Formación continua en desarrollo de software, cursos especializados y certificaciones en tecnologías modernas.",
     color: "#1a1a2e",
+    image: "/images/imagen3.png",
   },
   // Pared derecha (z=6 primero, z=-6 último)
   {
@@ -39,6 +42,7 @@ const paintings = [
     title: "Habilidades",
     description: "React • Next.js • TypeScript • Node.js • Python • Three.js • Tailwind CSS • PostgreSQL • MongoDB • Git",
     color: "#0f3460",
+    image: "/images/imagen4.png",
   },
   {
     id: 5,
@@ -47,6 +51,7 @@ const paintings = [
     title: "Experiencia",
     description: "Años de experiencia desarrollando aplicaciones web modernas, desde startups hasta proyectos empresariales. Siempre aprendiendo y mejorando.",
     color: "#16213e",
+    image: "/images/imagen5.png",
   },
   {
     id: 6,
@@ -171,6 +176,7 @@ export function Gallery() {
           title={painting.title}
           description={painting.description}
           color={painting.color}
+          image={painting.image}
         />
       ))}
     </group>
