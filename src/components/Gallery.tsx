@@ -6,9 +6,10 @@ import { Painting } from "./Painting";
 
 // Información para cada cuadro (pasillo más angosto)
 const paintings = [
+  // Pared izquierda (z=6 primero, z=-6 último)
   {
     id: 1,
-    position: [-2.75, 1.8, -6] as [number, number, number],
+    position: [-2.75, 1.8, 6] as [number, number, number],
     rotation: [0, Math.PI / 2, 0] as [number, number, number],
     title: "Sobre Mí",
     description: "Soy Yamil, un desarrollador apasionado por crear experiencias digitales únicas. Me encanta combinar creatividad con código para dar vida a ideas innovadoras.",
@@ -18,37 +19,38 @@ const paintings = [
     id: 2,
     position: [-2.75, 1.8, 0] as [number, number, number],
     rotation: [0, Math.PI / 2, 0] as [number, number, number],
-    title: "Habilidades",
-    description: "React • Next.js • TypeScript • Node.js • Python • Three.js • Tailwind CSS • PostgreSQL • MongoDB • Git",
+    title: "Proyectos",
+    description: "He trabajado en e-commerce, dashboards, aplicaciones móviles, y experiencias 3D interactivas como esta que estás explorando ahora.",
     color: "#16213e",
   },
   {
     id: 3,
-    position: [-2.75, 1.8, 6] as [number, number, number],
+    position: [-2.75, 1.8, -6] as [number, number, number],
     rotation: [0, Math.PI / 2, 0] as [number, number, number],
-    title: "Experiencia",
-    description: "Años de experiencia desarrollando aplicaciones web modernas, desde startups hasta proyectos empresariales. Siempre aprendiendo y mejorando.",
+    title: "Educación",
+    description: "Formación continua en desarrollo de software, cursos especializados y certificaciones en tecnologías modernas.",
     color: "#1a1a2e",
   },
+  // Pared derecha (z=6 primero, z=-6 último)
   {
     id: 4,
-    position: [2.75, 1.8, -6] as [number, number, number],
+    position: [2.75, 1.8, 6] as [number, number, number],
     rotation: [0, -Math.PI / 2, 0] as [number, number, number],
-    title: "Proyectos",
-    description: "He trabajado en e-commerce, dashboards, aplicaciones móviles, y experiencias 3D interactivas como esta que estás explorando ahora.",
+    title: "Habilidades",
+    description: "React • Next.js • TypeScript • Node.js • Python • Three.js • Tailwind CSS • PostgreSQL • MongoDB • Git",
     color: "#0f3460",
   },
   {
     id: 5,
     position: [2.75, 1.8, 0] as [number, number, number],
     rotation: [0, -Math.PI / 2, 0] as [number, number, number],
-    title: "Educación",
-    description: "Formación continua en desarrollo de software, cursos especializados y certificaciones en tecnologías modernas.",
+    title: "Experiencia",
+    description: "Años de experiencia desarrollando aplicaciones web modernas, desde startups hasta proyectos empresariales. Siempre aprendiendo y mejorando.",
     color: "#16213e",
   },
   {
     id: 6,
-    position: [2.75, 1.8, 6] as [number, number, number],
+    position: [2.75, 1.8, -6] as [number, number, number],
     rotation: [0, -Math.PI / 2, 0] as [number, number, number],
     title: "Contacto",
     description: "¿Tienes un proyecto en mente? ¡Hablemos! Email: tu@email.com • GitHub: github.com/tuusuario • LinkedIn: linkedin.com/in/tuusuario",
@@ -113,13 +115,13 @@ export function Gallery() {
       {/* Pared izquierda */}
       <mesh position={[-3, 2.5, 0]} receiveShadow>
         <boxGeometry args={[0.3, 5, 28]} />
-        <meshStandardMaterial color="#151515" roughness={0.85} metalness={0.1} />
+        <meshStandardMaterial color="#f5f0e6" roughness={0.9} metalness={0.05} />
       </mesh>
 
       {/* Pared derecha */}
       <mesh position={[3, 2.5, 0]} receiveShadow>
         <boxGeometry args={[0.3, 5, 28]} />
-        <meshStandardMaterial color="#151515" roughness={0.85} metalness={0.1} />
+        <meshStandardMaterial color="#f5f0e6" roughness={0.9} metalness={0.05} />
       </mesh>
 
       {/* Techo */}
@@ -137,7 +139,7 @@ export function Gallery() {
       {/* Pared del fondo */}
       <mesh position={[0, 2.5, -14]}>
         <boxGeometry args={[6, 5, 0.3]} />
-        <meshStandardMaterial color="#151515" roughness={0.85} />
+        <meshStandardMaterial color="#f5f0e6" roughness={0.9} metalness={0.05} />
       </mesh>
 
       {/* Molduras laterales en el techo - separadas para evitar z-fighting */}

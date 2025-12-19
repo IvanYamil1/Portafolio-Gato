@@ -20,7 +20,7 @@ export default function Scene() {
     <KeyboardControls map={controls}>
       <Canvas
         shadows
-        camera={{ position: [0, 2, 8], fov: 60 }}
+        camera={{ position: [0, 1.5, 13], fov: 60 }}
         style={{ width: "100vw", height: "100vh" }}
       >
         <color attach="background" args={["#0a0a0a"]} />

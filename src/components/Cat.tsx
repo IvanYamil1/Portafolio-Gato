@@ -172,16 +172,16 @@ export function Cat() {
         paintingPos.z + offset.z
       );
 
-      // Transición suave hacia el cuadro
+      // Transición suave hacia el cuadro (más lenta)
       if (isTransitioningToPainting.current) {
-        transitionProgress.current += delta * 0.4;
+        transitionProgress.current += delta * 0.25;
 
         // Ease-out cúbico suave
         const t = Math.min(transitionProgress.current, 1);
         const eased = 1 - Math.pow(1 - t, 3);
 
         // Velocidad que va de lento a la velocidad final sin corte
-        const lerpSpeed = 0.01 + (0.05 * eased);
+        const lerpSpeed = 0.008 + (0.03 * eased);
         state.camera.position.lerp(camTarget, lerpSpeed);
 
         // Interpolar el punto de mira
@@ -196,23 +196,23 @@ export function Cat() {
         }
       } else {
         // Ya terminó la transición, mantener posición estable
-        state.camera.position.lerp(camTarget, 0.08);
+        state.camera.position.lerp(camTarget, 0.05);
         lastLookAt.current.copy(paintingPos);
         state.camera.lookAt(paintingPos.x, paintingPos.y, paintingPos.z);
       }
       return;
     }
 
-    // Transición suave al volver del cuadro
+    // Transición suave al volver del cuadro (más lenta)
     if (wasViewingPainting.current) {
-      transitionProgress.current += delta * 0.35;
+      transitionProgress.current += delta * 0.2;
 
       // Ease-out cúbico para una transición muy suave
       const t = Math.min(transitionProgress.current, 1);
       const eased = 1 - Math.pow(1 - t, 3);
 
-      // Interpolar posición de cámara
-      const lerpSpeed = 0.01 + (0.05 * eased);
+      // Interpolar posición de cámara (más lento)
+      const lerpSpeed = 0.008 + (0.03 * eased);
       state.camera.position.lerp(catCamTarget, lerpSpeed);
 
       // Interpolar también el punto de mira (lookAt)
@@ -274,6 +274,11 @@ export function Cat() {
 
     // Cámara normal siguiendo al gato
     state.camera.position.lerp(catCamTarget, 0.08);
+
+    // Limitar la cámara para que no atraviese las paredes
+    state.camera.position.x = Math.max(-2.5, Math.min(2.5, state.camera.position.x));
+    state.camera.position.z = Math.max(-13, Math.min(13, state.camera.position.z));
+
     state.camera.lookAt(catLookAt);
   });
 

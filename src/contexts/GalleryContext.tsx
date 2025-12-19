@@ -12,15 +12,21 @@ interface PaintingView {
 interface GalleryContextType {
   selectedPainting: PaintingView | null;
   setSelectedPainting: (painting: PaintingView | null) => void;
+  isLoading: boolean;
+  setIsLoading: (loading: boolean) => void;
+  showIntro: boolean;
+  setShowIntro: (show: boolean) => void;
 }
 
 const GalleryContext = createContext<GalleryContextType | null>(null);
 
 export function GalleryProvider({ children }: { children: ReactNode }) {
   const [selectedPainting, setSelectedPainting] = useState<PaintingView | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showIntro, setShowIntro] = useState(true);
 
   return (
-    <GalleryContext.Provider value={{ selectedPainting, setSelectedPainting }}>
+    <GalleryContext.Provider value={{ selectedPainting, setSelectedPainting, isLoading, setIsLoading, showIntro, setShowIntro }}>
       {children}
     </GalleryContext.Provider>
   );
