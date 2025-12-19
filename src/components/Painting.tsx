@@ -136,6 +136,53 @@ function SquareImage({ image, position = [0, 0, 0] as [number, number, number], 
   );
 }
 
+// Componente para enlace interactivo con hover (correo, etc)
+function InteractiveLink({ icon, text, href, position }: { icon: string; text: string; href: string; position: [number, number, number] }) {
+  const [hovered, setHovered] = useState(false);
+  const groupRef = useRef<THREE.Group>(null);
+
+  useFrame(() => {
+    if (groupRef.current) {
+      const targetZ = hovered ? 0.015 : 0;
+      groupRef.current.position.z += (targetZ - groupRef.current.position.z) * 0.15;
+    }
+  });
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    window.open(href, '_blank', 'noopener,noreferrer');
+  };
+
+  return (
+    <group
+      ref={groupRef}
+      position={position}
+      onPointerEnter={() => setHovered(true)}
+      onPointerLeave={() => setHovered(false)}
+      onClick={handleClick}
+    >
+      <Text
+        position={[-0.26, 0, 0.001]}
+        fontSize={0.032}
+        color={hovered ? "#4a90d9" : "#c9a227"}
+        anchorX="left"
+        anchorY="middle"
+      >
+        {icon}
+      </Text>
+      <Text
+        position={[-0.20, 0, 0.001]}
+        fontSize={0.027}
+        color={hovered ? "#4a90d9" : "#5c4a32"}
+        anchorX="left"
+        anchorY="middle"
+      >
+        {text}
+      </Text>
+    </group>
+  );
+}
+
 // Componente base para el fondo pergamino
 function PergaminoBase({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -332,78 +379,177 @@ function ProyectosContent({ image }: { image?: string }) {
   );
 }
 
-// Componente para Educación - Estilo timeline vertical
+// Componente para card de educación con hover
+function EducacionCard({ icon, titulo, subtitulo, position, width = 1.6 }: {
+  icon: string;
+  titulo: string;
+  subtitulo: string;
+  position: [number, number, number];
+  width?: number;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const groupRef = useRef<THREE.Group>(null);
+
+  useFrame(() => {
+    if (groupRef.current) {
+      const targetZ = hovered ? 0.02 : 0;
+      groupRef.current.position.z += (targetZ - groupRef.current.position.z) * 0.15;
+    }
+  });
+
+  return (
+    <group
+      ref={groupRef}
+      position={position}
+      onPointerEnter={() => setHovered(true)}
+      onPointerLeave={() => setHovered(false)}
+    >
+      {/* Card background */}
+      <mesh position={[0, 0, -0.001]}>
+        <planeGeometry args={[width, 0.18]} />
+        <meshBasicMaterial color={hovered ? "#b8a67a" : "#c9b896"} />
+      </mesh>
+      {/* Icono */}
+      <Text position={[-width/2 + 0.12, 0, 0.001]} fontSize={0.05} anchorX="center" anchorY="middle">
+        {icon}
+      </Text>
+      {/* Título */}
+      <Text position={[0.05, 0.03, 0.001]} fontSize={0.038} color="#5c4a32" anchorX="center" anchorY="middle" fontWeight="bold">
+        {titulo}
+      </Text>
+      {/* Subtítulo */}
+      <Text position={[0.05, -0.04, 0.001]} fontSize={0.028} color="#8b7355" anchorX="center" anchorY="middle">
+        {subtitulo}
+      </Text>
+    </group>
+  );
+}
+
+// Componente para Educación - Rediseñado con enfoque en reclutadores
 function EducacionContent({ image }: { image?: string }) {
+  const habilidadesClave = [
+    "Algoritmos",
+    "Estructuras de Datos",
+    "POO",
+    "Bases de Datos",
+    "Redes",
+    "Ing. de Software",
+  ];
+
+  const certificaciones = [
+    { icon: "✅", nombre: "Desarrollo Web Full Stack" },
+    { icon: "✅", nombre: "React & Next.js Avanzado" },
+    { icon: "✅", nombre: "TypeScript Profesional" },
+  ];
+
   return (
     <PergaminoBase title="Educación">
-      {/* Timeline central */}
-      <group position={[0, 0, 0]}>
-        {/* Línea vertical del timeline */}
-        <mesh position={[-0.5, -0.05, -0.001]}>
-          <planeGeometry args={[0.004, 0.7]} />
-          <meshBasicMaterial color="#c9a227" />
-        </mesh>
+      {/* Card principal - Universidad */}
+      <EducacionCard
+        icon="🎓"
+        titulo="Universidad de Guadalajara"
+        subtitulo="Ingeniería en Computación • Cursando"
+        position={[0, 0.28, 0]}
+        width={1.65}
+      />
 
-        {/* Item 1 - Universidad */}
-        <group position={[0, 0.2, 0]}>
-          {/* Punto del timeline */}
-          <mesh position={[-0.5, 0, 0.001]} rotation={[0, 0, Math.PI / 4]}>
-            <planeGeometry args={[0.04, 0.04]} />
-            <meshBasicMaterial color="#c9a227" />
-          </mesh>
-          {/* Contenido */}
-          <group position={[0.15, 0, 0]}>
-            <Text position={[0, 0.03, 0.001]} fontSize={0.045} color="#5c4a32" anchorX="center" anchorY="middle">
-              🎓 Universidad de Guadalajara
-            </Text>
-            <Text position={[0, -0.04, 0.001]} fontSize={0.03} color="#8b7355" anchorX="center" anchorY="middle">
-              Ingeniería en Computación
-            </Text>
-          </group>
-        </group>
-
-        {/* Item 2 - Estado */}
-        <group position={[0, -0.05, 0]}>
-          <mesh position={[-0.5, 0, 0.001]} rotation={[0, 0, Math.PI / 4]}>
-            <planeGeometry args={[0.04, 0.04]} />
-            <meshBasicMaterial color="#c9a227" />
-          </mesh>
-          <group position={[0.15, 0, 0]}>
-            <Text position={[0, 0, 0.001]} fontSize={0.038} color="#5c4a32" anchorX="center" anchorY="middle">
-              📅 Actualmente cursando
-            </Text>
-          </group>
-        </group>
-
-        {/* Item 3 - Cursos */}
-        <group position={[0, -0.28, 0]}>
-          <mesh position={[-0.5, 0, 0.001]} rotation={[0, 0, Math.PI / 4]}>
-            <planeGeometry args={[0.04, 0.04]} />
-            <meshBasicMaterial color="#c9a227" />
-          </mesh>
-          <group position={[0.15, 0, 0]}>
-            <Text position={[0, 0.03, 0.001]} fontSize={0.035} color="#5c4a32" anchorX="center" anchorY="middle">
-              ✨ Cursos y Certificaciones
-            </Text>
-            <Text position={[0, -0.03, 0.001]} fontSize={0.025} color="#8b7355" anchorX="center" anchorY="middle">
-              Aprendizaje continuo autodidacta
-            </Text>
-          </group>
+      {/* Habilidades de la carrera en grid */}
+      <group position={[0, 0.06, 0]}>
+        <Text position={[0, 0.06, 0.001]} fontSize={0.028} color="#8b7355" anchorX="center" anchorY="middle">
+          Conocimientos Universitarios:
+        </Text>
+        <group position={[0, -0.02, 0]}>
+          {habilidadesClave.map((hab, index) => {
+            const col = index % 3;
+            const row = Math.floor(index / 3);
+            const x = -0.45 + col * 0.45;
+            const y = -row * 0.08;
+            return (
+              <group key={index} position={[x, y, 0]}>
+                <mesh position={[0, 0, -0.001]}>
+                  <planeGeometry args={[0.42, 0.065]} />
+                  <meshBasicMaterial color="#d4c4a8" />
+                </mesh>
+                <Text position={[0, 0, 0.001]} fontSize={0.024} color="#5c4a32" anchorX="center" anchorY="middle">
+                  {hab}
+                </Text>
+              </group>
+            );
+          })}
         </group>
       </group>
 
-      {/* Frase motivacional */}
+      {/* Línea separadora */}
+      <mesh position={[0, -0.12, 0]}>
+        <planeGeometry args={[1.5, 0.002]} />
+        <meshBasicMaterial color="#c9a227" transparent opacity={0.5} />
+      </mesh>
+
+      {/* Certificaciones / Aprendizaje autodidacta */}
+      <group position={[0, -0.3, 0]}>
+        <Text position={[0, 0.1, 0.001]} fontSize={0.035} color="#5c4a32" anchorX="center" anchorY="middle" fontWeight="bold">
+          📚 Formación Complementaria
+        </Text>
+        <Text position={[0, 0.04, 0.001]} fontSize={0.026} color="#8b7355" anchorX="center" anchorY="middle">
+          Cursos, certificaciones y aprendizaje autodidacta
+        </Text>
+
+        {/* Lista de certificaciones - centradas */}
+        {certificaciones.map((cert, index) => (
+          <group key={index} position={[0, -0.04 - index * 0.075, 0]}>
+            <Text position={[-0.24, 0, 0.001]} fontSize={0.028} anchorX="right" anchorY="middle">
+              {cert.icon}
+            </Text>
+            <Text position={[-0.20, 0, 0.001]} fontSize={0.026} color="#5c4a32" anchorX="left" anchorY="middle">
+              {cert.nombre}
+            </Text>
+          </group>
+        ))}
+      </group>
+
+      {/* Frase final orientada a reclutadores */}
       <Text
-        position={[0, -0.52, 0.001]}
-        fontSize={0.025}
+        position={[0, -0.54, 0.001]}
+        fontSize={0.028}
         color="#8b7355"
         anchorX="center"
         anchorY="middle"
         fontStyle="italic"
       >
-        "El conocimiento es el mejor recurso"
+        Formación sólida + aprendizaje continuo
       </Text>
     </PergaminoBase>
+  );
+}
+
+// Componente para skill badge con hover
+function SkillBadge({ skill, position }: { skill: string; position: [number, number, number] }) {
+  const [hovered, setHovered] = useState(false);
+  const groupRef = useRef<THREE.Group>(null);
+
+  useFrame(() => {
+    if (groupRef.current) {
+      const targetZ = hovered ? 0.02 : 0;
+      groupRef.current.position.z += (targetZ - groupRef.current.position.z) * 0.15;
+    }
+  });
+
+  return (
+    <group
+      ref={groupRef}
+      position={position}
+      onPointerEnter={() => setHovered(true)}
+      onPointerLeave={() => setHovered(false)}
+    >
+      {/* Badge background */}
+      <mesh position={[0, 0, -0.001]}>
+        <planeGeometry args={[0.52, 0.072]} />
+        <meshBasicMaterial color={hovered ? "#b8a67a" : "#c9b896"} />
+      </mesh>
+      <Text position={[0, 0, 0.001]} fontSize={0.026} color="#5c4a32" anchorX="center" anchorY="middle">
+        {skill}
+      </Text>
+    </group>
   );
 }
 
@@ -436,18 +582,13 @@ function HabilidadesContent({ image }: { image?: string }) {
                 {cat.titulo}
               </Text>
 
-              {/* Skills como lista vertical */}
+              {/* Skills como lista vertical con hover */}
               {cat.skills.map((skill, skillIndex) => (
-                <group key={skillIndex} position={[0, -0.05 - skillIndex * 0.085, 0]}>
-                  {/* Badge background */}
-                  <mesh position={[0, 0, -0.001]}>
-                    <planeGeometry args={[0.52, 0.072]} />
-                    <meshBasicMaterial color="#c9b896" />
-                  </mesh>
-                  <Text position={[0, 0, 0.001]} fontSize={0.026} color="#5c4a32" anchorX="center" anchorY="middle">
-                    {skill}
-                  </Text>
-                </group>
+                <SkillBadge
+                  key={skillIndex}
+                  skill={skill}
+                  position={[0, -0.05 - skillIndex * 0.085, 0]}
+                />
               ))}
             </group>
           );
@@ -474,98 +615,180 @@ function HabilidadesContent({ image }: { image?: string }) {
   );
 }
 
-// Componente para Experiencia - Estilo horizontal con iconos grandes
+// Componente para stat card con hover
+function StatCard({ numero, label, icon, position }: { numero: string; label: string; icon: string; position: [number, number, number] }) {
+  const [hovered, setHovered] = useState(false);
+  const groupRef = useRef<THREE.Group>(null);
+
+  useFrame(() => {
+    if (groupRef.current) {
+      const targetZ = hovered ? 0.02 : 0;
+      groupRef.current.position.z += (targetZ - groupRef.current.position.z) * 0.15;
+    }
+  });
+
+  return (
+    <group
+      ref={groupRef}
+      position={position}
+      onPointerEnter={() => setHovered(true)}
+      onPointerLeave={() => setHovered(false)}
+    >
+      {/* Card background */}
+      <mesh position={[0, 0, -0.001]}>
+        <planeGeometry args={[0.42, 0.32]} />
+        <meshBasicMaterial color={hovered ? "#b8a67a" : "#c9b896"} />
+      </mesh>
+      {/* Icono */}
+      <Text position={[0, 0.08, 0.001]} fontSize={0.05} anchorX="center" anchorY="middle">
+        {icon}
+      </Text>
+      {/* Número grande */}
+      <Text position={[0, -0.02, 0.001]} fontSize={0.07} color="#5c4a32" anchorX="center" anchorY="middle" fontWeight="bold">
+        {numero}
+      </Text>
+      {/* Label */}
+      <Text position={[0, -0.11, 0.001]} fontSize={0.022} color="#8b7355" anchorX="center" anchorY="middle">
+        {label}
+      </Text>
+    </group>
+  );
+}
+
+// Componente para Experiencia - Estadísticas visuales
 function ExperienciaContent({ image }: { image?: string }) {
-  const experiencias = [
-    { icon: "💼", titulo: "Freelance", desc: "Desarrollo web para clientes" },
-    { icon: "🚀", titulo: "Proyectos", desc: "Apps personales y comerciales" },
-    { icon: "🎯", titulo: "Full Stack", desc: "Web y móvil end-to-end" },
+  const stats = [
+    { numero: "15+", label: "Proyectos entregados", icon: "🚀" },
+    { numero: "2+", label: "Años programando", icon: "💻" },
+    { numero: "10+", label: "Tecnologías", icon: "⚙️" },
+  ];
+
+  const logros = [
+    { icon: "✅", texto: "Proyectos para clientes reales en producción" },
+    { icon: "✅", texto: "Apps web y móviles desde cero hasta deploy" },
+    { icon: "✅", texto: "Código limpio, escalable y bien documentado" },
   ];
 
   return (
     <PergaminoBase title="Experiencia">
-      {/* Experiencias en fila horizontal */}
-      <group position={[0, 0.1, 0]}>
-        {experiencias.map((exp, index) => {
-          const x = -0.55 + index * 0.55;
-          return (
-            <group key={index} position={[x, 0, 0]}>
-              {/* Círculo de fondo para icono */}
-              <mesh position={[0, 0.08, -0.001]}>
-                <circleGeometry args={[0.12, 32]} />
-                <meshBasicMaterial color="#c9b896" />
-              </mesh>
-              {/* Borde dorado */}
-              <mesh position={[0, 0.08, -0.002]}>
-                <ringGeometry args={[0.12, 0.135, 32]} />
-                <meshBasicMaterial color="#c9a227" />
-              </mesh>
-              {/* Icono */}
-              <Text position={[0, 0.08, 0.001]} fontSize={0.08} anchorX="center" anchorY="middle">
-                {exp.icon}
-              </Text>
-              {/* Título */}
-              <Text position={[0, -0.08, 0.001]} fontSize={0.038} color="#5c4a32" anchorX="center" anchorY="middle">
-                {exp.titulo}
-              </Text>
-              {/* Descripción */}
-              <Text position={[0, -0.15, 0.001]} fontSize={0.022} color="#8b7355" anchorX="center" anchorY="middle" maxWidth={0.45} textAlign="center">
-                {exp.desc}
-              </Text>
-            </group>
-          );
-        })}
+      {/* Stats en fila */}
+      <group position={[0, 0.18, 0]}>
+        {stats.map((stat, index) => (
+          <StatCard
+            key={index}
+            numero={stat.numero}
+            label={stat.label}
+            icon={stat.icon}
+            position={[-0.48 + index * 0.48, 0, 0]}
+          />
+        ))}
       </group>
 
-      {/* Línea decorativa */}
-      <mesh position={[0, -0.18, 0]}>
+      {/* Línea separadora */}
+      <mesh position={[0, -0.03, 0]}>
         <planeGeometry args={[1.5, 0.002]} />
-        <meshBasicMaterial color="#c9a227" transparent opacity={0.4} />
+        <meshBasicMaterial color="#c9a227" transparent opacity={0.5} />
       </mesh>
 
-      {/* Texto destacado */}
-      <group position={[0, -0.35, 0]}>
-        <mesh position={[0, 0, -0.001]}>
-          <planeGeometry args={[1.5, 0.2]} />
-          <meshBasicMaterial color="#c9b896" />
-        </mesh>
-        <Text
-          position={[0, 0.03, 0.001]}
-          fontSize={0.035}
-          color="#5c4a32"
-          anchorX="center"
-          anchorY="middle"
-        >
-          Siempre aprendiendo y mejorando
-        </Text>
-        <Text
-          position={[0, -0.05, 0.001]}
-          fontSize={0.025}
-          color="#8b7355"
-          anchorX="center"
-          anchorY="middle"
-        >
-          Cada proyecto es una oportunidad de crecimiento
-        </Text>
+      {/* Logros */}
+      <group position={[0, -0.22, 0]}>
+        {logros.map((logro, index) => (
+          <group key={index} position={[0, 0.08 - index * 0.1, 0]}>
+            <Text position={[-0.7, 0, 0.001]} fontSize={0.03} anchorX="left" anchorY="middle">
+              {logro.icon}
+            </Text>
+            <Text position={[-0.62, 0, 0.001]} fontSize={0.026} color="#5c4a32" anchorX="left" anchorY="middle">
+              {logro.texto}
+            </Text>
+          </group>
+        ))}
       </group>
+
+      {/* Frase final */}
+      <Text
+        position={[0, -0.52, 0.001]}
+        fontSize={0.024}
+        color="#8b7355"
+        anchorX="center"
+        anchorY="middle"
+        fontStyle="italic"
+      >
+        Listo para aportar valor desde el día uno
+      </Text>
     </PergaminoBase>
   );
 }
 
-// Componente para Contacto - Estilo tarjeta de presentación
+// Componente para card de contacto con hover y click
+function ContactoCard({ icon, tipo, valor, href, position }: {
+  icon: string;
+  tipo: string;
+  valor: string;
+  href: string;
+  position: [number, number, number];
+}) {
+  const [hovered, setHovered] = useState(false);
+  const groupRef = useRef<THREE.Group>(null);
+
+  useFrame(() => {
+    if (groupRef.current) {
+      const targetZ = hovered ? 0.025 : 0;
+      groupRef.current.position.z += (targetZ - groupRef.current.position.z) * 0.15;
+    }
+  });
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    window.open(href, '_blank', 'noopener,noreferrer');
+  };
+
+  return (
+    <group
+      ref={groupRef}
+      position={position}
+      onPointerEnter={() => setHovered(true)}
+      onPointerLeave={() => setHovered(false)}
+      onClick={handleClick}
+    >
+      {/* Card */}
+      <mesh position={[0, 0, -0.001]}>
+        <planeGeometry args={[0.52, 0.35]} />
+        <meshBasicMaterial color={hovered ? "#b8a67a" : "#c9b896"} />
+      </mesh>
+      {/* Icono con fondo */}
+      <mesh position={[0, 0.08, 0]}>
+        <circleGeometry args={[0.055, 32]} />
+        <meshBasicMaterial color="#5c4a32" />
+      </mesh>
+      <Text position={[0, 0.08, 0.001]} fontSize={0.045} anchorX="center" anchorY="middle">
+        {icon}
+      </Text>
+      {/* Tipo */}
+      <Text position={[0, -0.02, 0.001]} fontSize={0.032} color={hovered ? "#4a90d9" : "#5c4a32"} anchorX="center" anchorY="middle" fontWeight="bold">
+        {tipo}
+      </Text>
+      {/* Valor */}
+      <Text position={[0, -0.1, 0.001]} fontSize={0.022} color={hovered ? "#4a90d9" : "#6b5a42"} anchorX="center" anchorY="middle" maxWidth={0.48}>
+        {valor}
+      </Text>
+    </group>
+  );
+}
+
+// Componente para Contacto - Rediseñado con interactividad
 function ContactoContent() {
   const contactos = [
-    { icon: "✉️", valor: "Ivan.hamden7950@alumnos.udg.mx", tipo: "Email" },
-    { icon: "🐙", valor: "github.com/IvanYamil", tipo: "GitHub" },
-    { icon: "💼", valor: "linkedin.com/in/ivanyamil", tipo: "LinkedIn" },
+    { icon: "📱", tipo: "Teléfono", valor: "+52 332 828 4916", href: "tel:+523328284916" },
+    { icon: "✉️", tipo: "Email", valor: "Ivan.hamden7950@alumnos.udg.mx", href: "mailto:Ivan.hamden7950@alumnos.udg.mx" },
+    { icon: "🐙", tipo: "GitHub", valor: "github.com/IvanYamil1", href: "https://github.com/IvanYamil1" },
   ];
 
   return (
     <PergaminoBase title="Contacto">
       {/* Título llamativo */}
       <Text
-        position={[0, 0.22, 0.001]}
-        fontSize={0.06}
+        position={[0, 0.26, 0.001]}
+        fontSize={0.065}
         color="#5c4a32"
         anchorX="center"
         anchorY="middle"
@@ -575,8 +798,8 @@ function ContactoContent() {
 
       {/* Subtítulo */}
       <Text
-        position={[0, 0.12, 0.001]}
-        fontSize={0.028}
+        position={[0, 0.15, 0.001]}
+        fontSize={0.03}
         color="#8b7355"
         anchorX="center"
         anchorY="middle"
@@ -585,51 +808,30 @@ function ContactoContent() {
       </Text>
 
       {/* Cards de contacto en fila */}
-      <group position={[0, -0.08, 0]}>
-        {contactos.map((contacto, index) => {
-          const x = -0.52 + index * 0.52;
-          return (
-            <group key={index} position={[x, 0, 0]}>
-              {/* Card */}
-              <mesh position={[0, 0, -0.001]}>
-                <planeGeometry args={[0.48, 0.28]} />
-                <meshBasicMaterial color="#c9b896" />
-              </mesh>
-              {/* Icono */}
-              <Text position={[0, 0.06, 0.001]} fontSize={0.06} anchorX="center" anchorY="middle">
-                {contacto.icon}
-              </Text>
-              {/* Tipo */}
-              <Text position={[0, -0.03, 0.001]} fontSize={0.025} color="#c9a227" anchorX="center" anchorY="middle">
-                {contacto.tipo}
-              </Text>
-              {/* Valor */}
-              <Text position={[0, -0.09, 0.001]} fontSize={0.016} color="#5c4a32" anchorX="center" anchorY="middle" maxWidth={0.44}>
-                {contacto.valor}
-              </Text>
-            </group>
-          );
-        })}
+      <group position={[0, -0.1, 0]}>
+        {contactos.map((contacto, index) => (
+          <ContactoCard
+            key={index}
+            icon={contacto.icon}
+            tipo={contacto.tipo}
+            valor={contacto.valor}
+            href={contacto.href}
+            position={[-0.56 + index * 0.56, 0, 0]}
+          />
+        ))}
       </group>
 
-      {/* Ubicación con estilo especial */}
-      <group position={[0, -0.35, 0]}>
-        <mesh position={[0, 0, -0.001]}>
-          <planeGeometry args={[0.8, 0.12]} />
-          <meshBasicMaterial color="#c9b896" />
-        </mesh>
-        <Text position={[-0.15, 0, 0.001]} fontSize={0.04} anchorX="center" anchorY="middle">
-          📍
-        </Text>
-        <Text position={[0.1, 0, 0.001]} fontSize={0.03} color="#5c4a32" anchorX="left" anchorY="middle">
-          Guadalajara, México
+      {/* Ubicación */}
+      <group position={[0, -0.4, 0]}>
+        <Text position={[0, 0, 0.001]} fontSize={0.032} color="#5c4a32" anchorX="center" anchorY="middle">
+          📍 Guadalajara, México
         </Text>
       </group>
 
       {/* Frase final */}
       <Text
-        position={[0, -0.5, 0.001]}
-        fontSize={0.024}
+        position={[0, -0.52, 0.001]}
+        fontSize={0.026}
         color="#8b7355"
         anchorX="center"
         anchorY="middle"
@@ -681,7 +883,10 @@ function SobreMiContent({ image }: { image?: string }) {
       {/* Imagen - lado izquierdo */}
       {image && (
         <group position={[-0.32, 0.05, 0]}>
-          <SquareImage image={image} position={[0, 0, 0]} size={0.58} />
+          <Suspense fallback={null}>
+            <SquareImage image={image} position={[0, 0, 0]} size={0.58} />
+          </Suspense>
+          {/* Borde dorado */}
           <mesh position={[0, 0, -0.001]}>
             <planeGeometry args={[0.62, 0.62]} />
             <meshBasicMaterial color="#c9a227" />
@@ -809,27 +1014,13 @@ function SobreMiContent({ image }: { image?: string }) {
             </Text>
           </group>
 
-          {/* Correo */}
-          <group position={[0, -0.12, 0]}>
-            <Text
-              position={[-0.26, 0, 0.001]}
-              fontSize={0.032}
-              color="#c9a227"
-              anchorX="left"
-              anchorY="middle"
-            >
-              ✉️
-            </Text>
-            <Text
-              position={[-0.20, 0, 0.001]}
-              fontSize={0.027}
-              color="#5c4a32"
-              anchorX="left"
-              anchorY="middle"
-            >
-              Ivan.hamden7950@alumnos.udg.mx
-            </Text>
-          </group>
+          {/* Correo - interactivo */}
+          <InteractiveLink
+            icon="✉️"
+            text="Ivan.hamden7950@alumnos.udg.mx"
+            href="mailto:Ivan.hamden7950@alumnos.udg.mx"
+            position={[0, -0.12, 0]}
+          />
         </group>
       </group>
 
