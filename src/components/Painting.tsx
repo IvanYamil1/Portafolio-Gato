@@ -327,17 +327,21 @@ function HabilidadesContent({ image }: { image?: string }) {
 
           return (
             <group key={catIndex} position={[x, 0.08, 0]}>
-              {/* Header de categoría */}
-              <Text position={[0, 0.22, 0.001]} fontSize={0.055} anchorX="center" anchorY="middle">
+              {/* Header de categoría con fondo */}
+              <mesh position={[0, 0.17, -0.001]}>
+                <circleGeometry args={[0.08, 32]} />
+                <meshBasicMaterial color="#5c4a32" />
+              </mesh>
+              <Text position={[0, 0.17, 0.001]} fontSize={0.05} anchorX="center" anchorY="middle">
                 {cat.icon}
               </Text>
-              <Text position={[0, 0.13, 0.001]} fontSize={0.03} color="#c9a227" anchorX="center" anchorY="middle">
+              <Text position={[0, 0.06, 0.001]} fontSize={0.032} color="#5c4a32" anchorX="center" anchorY="middle" fontWeight="bold">
                 {cat.titulo}
               </Text>
 
               {/* Skills como lista vertical */}
               {cat.skills.map((skill, skillIndex) => (
-                <group key={skillIndex} position={[0, 0.02 - skillIndex * 0.085, 0]}>
+                <group key={skillIndex} position={[0, -0.05 - skillIndex * 0.085, 0]}>
                   {/* Badge background */}
                   <mesh position={[0, 0, -0.001]}>
                     <planeGeometry args={[0.52, 0.072]} />
